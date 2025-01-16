@@ -17,6 +17,9 @@ terraform {
       version = "0.69.1"
     }
   }
+  backend "pg" {
+    conn_str = "postgres://192.168.50.104/terraform"
+  }
 }
 
 provider "proxmox" {
