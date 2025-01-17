@@ -18,11 +18,6 @@ resource "proxmox_virtual_environment_vm" "nginx" {
     type  = "x86-64-v2-AES" # recommended for modern CPUs
   }
 
-  cdrom {
-    enabled = true
-    file_id = "unraid-isos:iso/archlinux-2025.01.14-x86_64.iso"
-  }
-
   disk {
     datastore_id = "unraid-domains"
     interface    = "scsi0"
