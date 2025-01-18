@@ -38,7 +38,7 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_cp_01_ip_addr}/24"
+        address = "${var.talos_cp_01_ip}/24"
         gateway = var.default_gateway
       }
     }
@@ -86,7 +86,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker_01" {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_worker_01_ip_addr}/24"
+        address = "${var.talos_worker_01_ip}/24"
         gateway = var.default_gateway
       }
     }
