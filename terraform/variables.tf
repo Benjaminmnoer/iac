@@ -9,4 +9,3 @@ variable "virtual_environment_username" {
 variable "virtual_environment_password" {
   type = string
 }
-
