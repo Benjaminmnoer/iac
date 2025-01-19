@@ -17,19 +17,3 @@ variable "virtual_environment_username" {
 variable "virtual_environment_password" {
   type = string
 }
-
-#################### TALOS ####################
-variable "talos_cluster_name" {
-  type    = string
-  default = "istari"
-}
-
-variable "talos_cp_01_ip" {
-  type    = string
-  default = "192.168.50.101"
-}
-
-variable "talos_worker_01_ip" {
-  type    = string
-  default = "192.168.50.102"
-}
