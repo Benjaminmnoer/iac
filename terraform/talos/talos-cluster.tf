@@ -8,9 +8,27 @@ data "talos_client_configuration" "talosconfig" {
 
 data "talos_machine_configuration" "machineconfig_cp" {
   cluster_name     = var.talos_cluster_name
-  cluster_endpoint = "https://istari.benjaminmnoer.dk"
+  cluster_endpoint = "https://istari.benjaminmnoer.dk:6443"
   machine_type     = "controlplane"
   machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
+  config_patches = [
+    yamlencode({
+      machine = {
+        certSANs = [
+          "istari",
+          "istari.benjaminmnoer.dk"
+        ],
+        network = {
+          extraHostEntries = [
+            {
+              ip = "192.168.50.100",
+              aliases = [ "istari", "istari.benjaminmnoer.dk" ]
+            }
+          ]
+        }
+      }
+    })
+  ]
 }
 
 resource "talos_machine_configuration_apply" "cp_01_config_apply" {
@@ -31,9 +49,27 @@ resource "talos_machine_configuration_apply" "cp_02_config_apply" {
 
 data "talos_machine_configuration" "machineconfig_worker" {
   cluster_name     = var.talos_cluster_name
-  cluster_endpoint = "https://istari.benjaminmnoer.dk"
+  cluster_endpoint = "https://istari.benjaminmnoer.dk:6443"
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
+  config_patches = [
+    yamlencode({
+      machine = {
+        certSANs = [
+          "istari",
+          "istari.benjaminmnoer.dk"
+        ],
+        network = {
+          extraHostEntries = [
+            {
+              ip = "192.168.50.100",
+              aliases = [ "istari", "istari.benjaminmnoer.dk" ]
+            }
+          ]
+        }
+      }
+    })
+  ]
 }
 
 resource "talos_machine_configuration_apply" "worker_01_config_apply" {
@@ -58,16 +94,16 @@ resource "talos_machine_bootstrap" "bootstrap" {
   node                 = var.talos_cp_01.ip
 }
 
-data "talos_cluster_health" "health" {
-  depends_on           = [ talos_machine_bootstrap.bootstrap ]
-  client_configuration = data.talos_client_configuration.talosconfig.client_configuration
-  control_plane_nodes  = [ var.talos_cp_01.ip, var.talos_cp_02.ip ]
-  worker_nodes         = [ var.talos_worker_01.ip, var.talos_worker_02.ip ]
-  endpoints            = data.talos_client_configuration.talosconfig.endpoints
-}
+# data "talos_cluster_health" "health" {
+#   depends_on           = [ talos_machine_bootstrap.bootstrap ]
+#   client_configuration = data.talos_client_configuration.talosconfig.client_configuration
+#   control_plane_nodes  = [ var.talos_cp_01.ip, var.talos_cp_02.ip ]
+#   worker_nodes         = [ var.talos_worker_01.ip, var.talos_worker_02.ip ]
+#   endpoints            = data.talos_client_configuration.talosconfig.endpoints
+# }
 
 resource "talos_cluster_kubeconfig" "kubeconfig" {
-  depends_on           = [ talos_machine_bootstrap.bootstrap, data.talos_cluster_health.health ]
+  depends_on           = [ talos_machine_bootstrap.bootstrap ] # depends_on           = [ talos_machine_bootstrap.bootstrap, data.talos_cluster_health.health ]
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
   node                 = var.talos_cp_01.ip
 }
