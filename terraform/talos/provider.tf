@@ -20,7 +20,7 @@ provider "proxmox" {
   password = var.virtual_environment_password
 
   min_tls = 1.2
-
+  insecure = true
   # uncomment (unless on Windows...)
   tmp_dir  = "/var/tmp"
 
