@@ -19,9 +19,25 @@ variable "virtual_environment_password" {
 }
 
 #################### TALOS ####################
-variable "talos_cluster_name" {
-  type    = string
-  default = "istari"
+variable "talos_cluster_config" {
+  type = object({
+    name = string
+    domain = string
+    endpoint = string
+    proxy = object({
+      ip = string
+      aliases = list(string)
+    })
+  })
+  default = {
+    name = "istari"
+    domain = "benjaminmnoer.dk"
+    endpoint = "https://istari.benjaminmnoer.dk:6443"
+    proxy = {
+      ip = "192.168.50.100"
+      aliases = [ "istari", "istari.benjaminmnoer.dk" ]
+    }
+  }
 }
 
 # Node defaults

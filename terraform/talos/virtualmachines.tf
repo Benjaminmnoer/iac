@@ -95,7 +95,7 @@ resource "proxmox_virtual_environment_vm" "talos_cp_02" {
 resource "proxmox_virtual_environment_vm" "talos_worker_01" {
   name        = "${var.talos_worker_01.name}"
   description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","controlplane"]
+  tags        = ["terraform","talos","worker"]
   node_name   = "${var.talos_worker_01.node}"
   on_boot     = true
 
@@ -142,7 +142,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker_01" {
 resource "proxmox_virtual_environment_vm" "talos_worker_02" {
   name        = "${var.talos_worker_02.name}"
   description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","controlplane"]
+  tags        = ["terraform","talos","worker"]
   node_name   = "${var.talos_worker_02.node}"
   on_boot     = true
 
