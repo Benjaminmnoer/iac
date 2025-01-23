@@ -108,6 +108,29 @@ variable "talos_cp_02" {
   }
 }
 
+variable "talos_cp_03" {
+  type = object({
+    name = string
+    ip = string
+    node = string
+    cpu = number
+    cputype = string
+    memory = number
+    disksize = number
+    file_id = string
+  })
+  default = {
+    name = "talos-cp-03"
+    ip = "192.168.50.114"
+    node = "rpi"
+    cpu = 2
+    cputype = "host"
+    memory = 2048
+    disksize = 40
+    file_id = "unraid-isos:iso/talos-v1.9.2-nocloud-arm64.img"
+  }
+}
+
 variable "talos_worker_01" {
   type = object({
     name = string
@@ -143,5 +166,28 @@ variable "talos_worker_02" {
     cpu = 4
     memory = 4096
     disksize = 100
+  }
+}
+
+variable "talos_worker_03" {
+  type = object({
+    name = string
+    ip = string
+    node = string
+    cpu = number
+    cputype = string
+    memory = number
+    disksize = number
+    file_id = string
+  })
+  default = {
+    name = "talos-worker-03"
+    ip = "192.168.50.115"
+    node = "rpi"
+    cpu = 1
+    cputype = "host"
+    memory = 1024
+    disksize = 20
+    file_id = "unraid-isos:iso/talos-v1.9.2-nocloud-arm64.img"
   }
 }

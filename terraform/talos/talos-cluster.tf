@@ -47,6 +47,14 @@ resource "talos_machine_configuration_apply" "cp_02_config_apply" {
   node                        = var.talos_cp_02.ip
 }
 
+resource "talos_machine_configuration_apply" "cp_03_config_apply" {
+  depends_on                  = [ proxmox_virtual_environment_vm.talos_cp_03, talos_machine_configuration_apply.cp_02_config_apply ]
+  client_configuration        = talos_machine_secrets.machine_secrets.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.machineconfig_cp.machine_configuration
+  count                       = 1
+  node                        = var.talos_cp_03.ip
+}
+
 data "talos_machine_configuration" "machineconfig_worker" {
   cluster_name     = var.talos_cluster_config.name
   cluster_endpoint = var.talos_cluster_config.endpoint
@@ -73,7 +81,7 @@ data "talos_machine_configuration" "machineconfig_worker" {
 }
 
 resource "talos_machine_configuration_apply" "worker_01_config_apply" {
-  depends_on                  = [ proxmox_virtual_environment_vm.talos_worker_01, talos_machine_configuration_apply.cp_02_config_apply ]
+  depends_on                  = [ proxmox_virtual_environment_vm.talos_worker_01, talos_machine_configuration_apply.cp_03_config_apply ]
   client_configuration        = talos_machine_secrets.machine_secrets.client_configuration
   machine_configuration_input = data.talos_machine_configuration.machineconfig_worker.machine_configuration
   count                       = 1
@@ -88,8 +96,16 @@ resource "talos_machine_configuration_apply" "worker_02_config_apply" {
   node                        = var.talos_worker_02.ip
 }
 
+resource "talos_machine_configuration_apply" "worker_03_config_apply" {
+  depends_on                  = [ proxmox_virtual_environment_vm.talos_worker_03, talos_machine_configuration_apply.worker_02_config_apply ]
+  client_configuration        = talos_machine_secrets.machine_secrets.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.machineconfig_worker.machine_configuration
+  count                       = 1
+  node                        = var.talos_worker_03.ip
+}
+
 resource "talos_machine_bootstrap" "bootstrap" {
-  depends_on           = [ talos_machine_configuration_apply.worker_02_config_apply ]
+  depends_on           = [ talos_machine_configuration_apply.worker_03_config_apply ]
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
   node                 = var.talos_cp_01.ip
 }
