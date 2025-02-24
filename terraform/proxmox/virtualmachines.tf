@@ -36,7 +36,7 @@ resource "proxmox_virtual_environment_file" "arch_user_data_cloud_config" {
 }
 
 resource "proxmox_virtual_environment_vm" "arch_dev_01" {
-  depends_on = [ proxmox_virtual_environment_file.arch_user_data_cloud_config ]
+  depends_on  = [proxmox_virtual_environment_file.arch_user_data_cloud_config]
   name        = "arch-dev-01"
   description = "Arch Linux dev machine. Managed by Terraform."
   tags        = ["terraform", "arch", "dev"]
@@ -62,10 +62,10 @@ resource "proxmox_virtual_environment_vm" "arch_dev_01" {
 
   disk {
     datastore_id = "data-nvme0n1"
-      file_id      = "unraid-isos:iso/arch-linux-amd64-cloudimg-20250115.img"
-      file_format  = "qcow2"
-      interface    = "virtio0"
-      size         = 100
+    file_id      = "unraid-isos:iso/arch-linux-amd64-cloudimg-20250115.img"
+    file_format  = "qcow2"
+    interface    = "virtio0"
+    size         = 100
   }
 
   operating_system {
