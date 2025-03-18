@@ -92,21 +92,6 @@
         --set=k8sServiceHost=localhost
         --set=k8sServicePort=7445
 
-      # kubernetes.core.helm:
-      #   name: cilium
-      #   chart_ref: cilium/cilium
-      #   chart_version: "{{ cilium_version }}"
-      #   namespace: kube-system
-      #   set_values:
-      #     - value: ipam.mode=kubernetes
-      #     - value: kubeProxyReplacement=true
-      #     - value: securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-      #     - value: securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-      #     - value: cgroup.autoMount.enabled=false
-      #     - value: cgroup.hostRoot=/sys/fs/cgroup
-      #     - value: k8sServiceHost=localhost
-      #     - value: k8sServicePort=7445
-
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
 
@@ -119,7 +104,7 @@
         --owner="benjaminmnoer"
         --repository="iac"
         --branch="master"
-        --path="clusters/staging/flux"
+        --path="clusters/staging"
         --personal
       environment:
         GITHUB_TOKEN: "{{ github_pat }}"
