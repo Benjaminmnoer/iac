@@ -1,0 +1,25 @@
+---
+- name: Tears down local Talos Kubernetes cluster
+  hosts: localhost
+  tasks:
+    # - name: Remove Cilium helm repository # Why is this needed?
+    #   command: >
+    #     helm repo remove cilium
+    - name: Get running containers
+      docker_host_info:
+        containers: yes
+      register: docker_info
+    - name: Stop running containers
+      docker_container:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ docker_info.containers | map(attribute='Id') | list }}"
+    - name: Delete talos cluster
+      command: talosctl cluster destroy
+    - name: Docker prune
+      community.docker.docker_prune:
+        containers: true
+        images: true
+        networks: true
+        volumes: true
+        builder_cache: true
