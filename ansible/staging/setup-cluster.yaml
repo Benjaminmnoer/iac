@@ -1,0 +1,125 @@
+---
+- name: Setup Local Talos Kubernetes Cluster with Cilium (Helm + CLI) and Flux CD
+  hosts: localhost
+  vars_prompt:
+    - name: github_pat
+      prompt: "Github PAT"
+  vars:
+    # docker_version: "28.0.1"
+    # flux_version: "2.5.1"
+    # cilium_cli_version: "0.18.0"
+    talos_version: "1.9.5"
+    kubernetes_version: "1.32.2"
+    cilium_version: "1.7.2"
+    cluster_name: "talos-cluster"
+    flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
+    cluster_location: "/home/benjaminmn/.talos/clusters/{{ cluster_name }}"
+    kubeconfig_path: "/home/benjaminmn/.kube/config"
+
+  tasks:
+    - name: Update system packages
+      become: true
+      pacman:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install required pacman packages
+      become: true
+      pacman:
+        name:
+          - docker
+          - kubectl
+          - fluxcd
+          - helm
+          - jq
+          - wget
+          - cilium-cli
+        state: present
+
+    - name: Download talosctl checksums
+      get_url:
+        url: https://github.com/siderolabs/talos/releases/download/v{{talos_version}}/sha256sum.txt
+        dest: /tmp/talosctl-sha256sum.txt
+
+    - name: Install talosctl
+      become: true
+      get_url:
+        url: https://github.com/siderolabs/talos/releases/download/v{{talos_version}}/talosctl-linux-amd64
+        dest: /usr/local/bin/talosctl
+        checksum: 'sha256:{{ checksum[0].split()[0] }}'
+        owner: root
+        group: root
+        mode: 0755
+      vars:
+        checksum: '{{ lookup("file", "/tmp/talosctl-sha256sum.txt").splitlines() | select("match", ".*talosctl-linux-amd64$") | list }}'
+
+    - name: Create Talos cluster without a default CNI
+      command: >
+        talosctl cluster create
+        --name {{ cluster_name }}
+        --kubernetes-version {{ kubernetes_version }}
+        --config-patch @talos-patch.yaml
+        --skip-k8s-node-readiness-check
+        --workers=3
+
+    - name: Add Cilium Helm repository
+      kubernetes.core.helm_repository:
+        name: cilium
+        repo_url: https://helm.cilium.io
+        force_update: true
+
+    - name: Update Helm repositories
+      command: helm repo update
+
+    # - name: Ensure .kube directory exists
+    #   file:
+    #     path: "/home/{{ ansible_user }}/.kube"
+    #     state: directory
+    #     owner: "{{ ansible_user }}"
+    #     group: "{{ ansible_user }}"
+    #     mode: '0755'
+
+    - name: Install Cilium using Helm
+      command: >
+        helm install cilium cilium/cilium
+        --namespace kube-system
+        --set=ipam.mode=kubernetes
+        --set=kubeProxyReplacement=true
+        --set=securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
+        --set=securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
+        --set=cgroup.autoMount.enabled=false
+        --set=cgroup.hostRoot=/sys/fs/cgroup
+        --set=k8sServiceHost=localhost
+        --set=k8sServicePort=7445
+
+      # kubernetes.core.helm:
+      #   name: cilium
+      #   chart_ref: cilium/cilium
+      #   chart_version: "{{ cilium_version }}"
+      #   namespace: kube-system
+      #   set_values:
+      #     - value: ipam.mode=kubernetes
+      #     - value: kubeProxyReplacement=true
+      #     - value: securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
+      #     - value: securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
+      #     - value: cgroup.autoMount.enabled=false
+      #     - value: cgroup.hostRoot=/sys/fs/cgroup
+      #     - value: k8sServiceHost=localhost
+      #     - value: k8sServicePort=7445
+
+    - name: Verify Cilium CLI is working
+      command: cilium-cli status --wait
+
+    - name: DNS test
+      command: kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
+
+    - name: Bootstrap Flux into Kubernetes
+      command: >
+        flux bootstrap github
+        --owner="benjaminmnoer"
+        --repository="iac"
+        --branch="master"
+        --path="clusters/staging/flux"
+        --personal
+      environment:
+        GITHUB_TOKEN: "{{ github_pat }}"
