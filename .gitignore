@@ -39,3 +39,5 @@ terraform.rc
 # Ignore production configs
 clusters/production/kubeconfig
 clusters/production/talosconfig
+
+.vscode/
