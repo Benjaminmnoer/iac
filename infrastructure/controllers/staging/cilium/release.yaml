@@ -25,9 +25,9 @@ spec:
       ui:
         enabled: true
       peerService:
-        clusterDomain: staging.istari.benjaminmnoer.dk
+        clusterDomain: cluster.local
     etcd:
-      clusterDomain: staging.istari.benjaminmnoer.dk
+      clusterDomain: cluster.local
     kubeProxyReplacement: true
     securityContext:
       capabilities:
