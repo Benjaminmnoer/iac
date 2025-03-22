@@ -51,7 +51,3 @@ spec:
       hostRoot: /sys/fs/cgroup
     k8sServiceHost: localhost
     k8sServicePort: "7445"
-    ingressController:
-      enabled: true
-      default: true
-      loadbalancerMode: dedicated
