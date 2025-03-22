@@ -36,6 +36,16 @@
           - cilium-cli
         state: present
 
+    # - name: Install hubble
+    #   become: true
+    #   command: >
+    #     HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
+    #     HUBBLE_ARCH=amd64
+    #     curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+    #     sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
+    #     sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
+    #     rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+
     - name: Download talosctl checksums
       get_url:
         url: https://github.com/siderolabs/talos/releases/download/v{{talos_version}}/sha256sum.txt
@@ -60,7 +70,8 @@
         --kubernetes-version {{ kubernetes_version }}
         --config-patch @talos-patch.yaml
         --skip-k8s-node-readiness-check
-        --workers=3
+        --controlplanes=2
+        --workers=2
 
     - name: Add Cilium Helm repository
       kubernetes.core.helm_repository:
