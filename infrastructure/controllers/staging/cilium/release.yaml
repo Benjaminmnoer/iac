@@ -56,4 +56,4 @@ spec:
     ingressController:
       enabled: true
       default: true
-      loadBalancerMode: dedicated
+      loadbalancerMode: dedicated
