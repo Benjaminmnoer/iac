@@ -17,8 +17,6 @@ spec:
   values:
     ipam:
       mode: kubernetes
-    hostFirewall:
-      enabled: true
     hubble:
       relay:
         enabled: true
