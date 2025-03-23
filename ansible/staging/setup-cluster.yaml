@@ -84,13 +84,14 @@
     - name: Update Helm repositories
       command: helm repo update
 
-    # - name: Ensure .kube directory exists
-    #   file:
-    #     path: "/home/{{ ansible_user }}/.kube"
-    #     state: directory
-    #     owner: "{{ ansible_user }}"
-    #     group: "{{ ansible_user }}"
-    #     mode: '0755'
+    - name: Install Gateway API CRDs
+      shell: | 
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
 
     - name: Install Cilium using Helm
       command: >
@@ -104,6 +105,7 @@
         --set=cgroup.hostRoot=/sys/fs/cgroup
         --set=k8sServiceHost=localhost
         --set=k8sServicePort=7445
+        --set=l7Proxy=true
 
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
