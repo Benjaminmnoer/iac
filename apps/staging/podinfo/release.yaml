@@ -25,5 +25,5 @@ spec:
     ingress:
       enabled: true
       className: cilium
-  #   service:
-  #     type: LoadBalancer      
+    service:
+      type: LoadBalancer      
