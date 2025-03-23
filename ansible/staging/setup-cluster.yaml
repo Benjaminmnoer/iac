@@ -109,6 +109,18 @@
     - name: DNS test
       command: kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
 
+    # - name: Create namespace
+    #   command: kubectl create namespace cilium-test-1
+        
+    # - name: Label namespace
+    #   command: kubectl label namespace cilium-test-1 pod-security.kubernetes.io/enforce=privileged
+
+    # - name: Cilium test
+    #   command: cilium-cli connectivity test
+
+    # - name: Remove namespace
+    #   command: kubectl delete namespace cilium-test-1
+
     - name: Bootstrap Flux into Kubernetes
       command: >
         flux bootstrap github
