@@ -17,13 +17,13 @@ spec:
       retries: 3
   # Default values
   # https://github.com/stefanprodan/podinfo/blob/master/charts/podinfo/values.yaml
-  # values:
+  values:
   #   redis:
   #     enabled: true
   #     repository: public.ecr.aws/docker/library/redis
   #     tag: 7.0.6
-  #   ingress:
-  #     enabled: true
-  #     className: traefik-proxy
+    ingress:
+      enabled: true
+      className: cilium
   #   service:
   #     type: LoadBalancer      
