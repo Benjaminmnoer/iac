@@ -22,8 +22,8 @@ spec:
   #     enabled: true
   #     repository: public.ecr.aws/docker/library/redis
   #     tag: 7.0.6
-    ingress:
-      enabled: true
-      className: cilium
-    service:
-      type: LoadBalancer      
+    # ingress:
+    #   enabled: true
+    #   className: cilium
+    # service:
+    #   type: LoadBalancer      
