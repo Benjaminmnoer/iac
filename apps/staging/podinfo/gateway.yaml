@@ -5,12 +5,15 @@ metadata:
   name: podinfo-gateway
   namespace: podinfo
 spec:
+  addresses:
+  - type: IPAddress
+    value: 10.5.0.5
   gatewayClassName: cilium
   listeners:
   - name: http
     port: 9898
     protocol: HTTP
----
+--- 
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
