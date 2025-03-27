@@ -106,6 +106,7 @@
         --set=k8sServiceHost=localhost
         --set=k8sServicePort=7445
         --set=l7Proxy=true
+        --set=gatewayAPI.enabled=true
 
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
