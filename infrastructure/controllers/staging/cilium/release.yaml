@@ -21,6 +21,8 @@ spec:
     k8sServicePort: "7445"
     gatewayApi:
       enabled: true
+      hostNetwork:
+        enabled: true
     ipam:
       mode: kubernetes
     hubble:
