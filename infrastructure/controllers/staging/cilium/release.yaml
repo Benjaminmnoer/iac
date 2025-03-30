@@ -15,16 +15,19 @@ spec:
         namespace: kube-system
       interval: 1m
   values:
-    kubeProxyReplacement: true
-    l7Proxy: true
+    ipam:
+      mode: kubernetes
     k8sServiceHost: localhost
     k8sServicePort: "7445"
+    kubeProxyReplacement: true
+    enable-l2-announcements: true
+    l7Proxy: true
+    # k8s-client-qps: {QPS}
+    # k8s-client-burst: {BURST}
     gatewayAPI:
       enabled: true
       hostNetwork:
         enabled: true
-    ipam:
-      mode: kubernetes
     hubble:
       relay:
         enabled: true

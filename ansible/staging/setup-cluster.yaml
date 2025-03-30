@@ -107,6 +107,9 @@
         --set=k8sServicePort=7445
         --set=l7Proxy=true
         --set=gatewayAPI.enabled=true
+        --set l2announcements.enabled=true
+#        --set k8sClientRateLimit.qps={QPS}
+#        --set k8sClientRateLimit.burst={BURST}
 
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
