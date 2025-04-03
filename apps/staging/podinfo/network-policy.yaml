@@ -6,4 +6,4 @@ spec:
   serviceSelector:
     matchLabels:
       gateway.networking.k8s.io/gateway-name: podinfo-gateway
-  externalIPs: true
+  loadBalancerIPs: true
