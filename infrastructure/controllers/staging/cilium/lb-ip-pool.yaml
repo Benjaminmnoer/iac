@@ -4,5 +4,5 @@ metadata:
   name: "blue-pool"
 spec:
   blocks:
-  - start: "10.5.0.6/24"
-    stop: "10.5.0.254/24"
+  - start: "10.5.0.6"
+    stop: "10.5.0.254"
