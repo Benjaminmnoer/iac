@@ -1,0 +1,22 @@
+- name: Proxmox post install
+  hosts: proxmox
+  roles:
+    - proxmox-setup
+
+- name: Enable GPU passthrough on Proxmox
+  hosts: gpu-passthrough
+  become: true
+  roles:
+    - gpu-passthrough
+
+# - name: Prepare Proxmox to virtualize Unraid
+#   hosts: proxmox_unraid
+#   become: true
+#   roles:
+#     - unraid_virtualization
+
+# - name: Configure Raspberry Pi with Pimox7
+#   hosts: pimox
+#   become: true
+#   roles:
+#     - pimox_setup
