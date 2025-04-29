@@ -41,3 +41,7 @@ clusters/production/kubeconfig
 clusters/production/talosconfig
 
 .vscode/
+.ansible/
+
+# Ansible inventory
+ansible/production/inventory.yaml
