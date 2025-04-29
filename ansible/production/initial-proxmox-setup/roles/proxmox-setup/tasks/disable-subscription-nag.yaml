@@ -1,0 +1,13 @@
+---
+- name: Adding disable nag post invoke
+  ansible.builtin.copy:
+    content: >
+      DPkg::Post-Invoke {
+      "dpkg -V proxmox-widget-toolkit | grep -q '/proxmoxlib\.js$';
+      if [ $? -eq 1 ]; then { echo 'Removing subscription nag from UI...';
+      sed -i '/.*data\.status.*{/{s/\!//;s/active/NoMoreNagging/}'
+      /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; }; fi"; };
+    dest: /etc/apt/apt.conf.d/no-nag-script
+    mode: u=rw,g=r,o=r
+- name: Reinstall proxmox-widget-toolkit
+  shell: apt-get --reinstall install proxmox-widget-toolkit

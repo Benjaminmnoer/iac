@@ -1,0 +1,40 @@
+---
+- name: Correct apt sources
+  ansible.builtin.copy:
+    content: |
+      deb http://deb.debian.org/debian bookworm main contrib
+      deb http://deb.debian.org/debian bookworm-updates main contrib
+      deb http://security.debian.org/debian-security bookworm-security main contrib
+    dest: /etc/apt/sources.list
+    backup: true
+    mode: preserve
+
+- name: Disable bookworm firmware (?)
+  ansible.builtin.copy:
+    content: APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";
+    dest: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
+    mode: u=rw,g=r,o=r
+
+- name: Remove pve-enterprise repository
+  ansible.builtin.apt_repository:
+    repo: deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
+    state: absent
+    update_cache: true
+    filename: pve-enterprise
+
+- name: Add pve-no-subscription repository
+  ansible.builtin.apt_repository:
+    repo: deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+    state: present
+    update_cache: true
+    filename: pve-no-subscription
+
+- name: Correct ceph apt sources
+  ansible.builtin.copy:
+    content: |
+      # deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
+      # deb http://download.proxmox.com/debian/ceph-quincy bookworm no-subscription
+      # deb https://enterprise.proxmox.com/debian/ceph-reef bookworm enterprise
+      # deb http://download.proxmox.com/debian/ceph-reef bookworm no-subscription
+    dest: /etc/apt/sources.list.d/ceph.list
+    mode: preserve
