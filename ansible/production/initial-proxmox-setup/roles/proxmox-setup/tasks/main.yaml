@@ -5,10 +5,11 @@
 - name: Disabling subscription nag
   ansible.builtin.import_tasks: disable-subscription-nag.yaml
 
-- name: Update proxmox
-  ansible.builtin.apt:
-    update-cache: true
-    upgrade: dist
+- name: Disable HA
+  ansible.builtin.import_tasks: disable-ha.yaml
 
-- name: Reboot proxmox
-  ansible.builtin.reboot:
+- name: Install dark theme
+  ansible.builtin.import_tasks: install-darktheme.yaml
+
+- name: Set hosts file
+  ansible.builtin.import_tasks: set-hosts.yaml

@@ -2,7 +2,7 @@
 - name: Update packages
   ansible.builtin.apt:
     update-cache: true
-    upgrade: yes
+    upgrade: safe
   notify: Reboot
 
 - name: Ensure curl install
@@ -27,4 +27,4 @@
     repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/pveport.gpg] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port"
     state: present
     filename: pveport
-  notify: apt update
+  notify: Apt update

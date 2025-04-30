@@ -2,7 +2,8 @@
 - name: Reboot
   ansible.builtin.reboot:
 
-- name: Apt update
+- name: Update packages
   ansible.builtin.apt:
     update-cache: true
+    upgrade: dist
   notify: Reboot

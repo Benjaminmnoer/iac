@@ -1,13 +1,26 @@
+---
+- name: Pimox setup
+  hosts: pimox
+  roles:
+    - pimox
+
+- name: Wait for pimox to be installed
+  hosts: localhost
+  tasks:
+    - name: Wait
+      ansible.builtin.pause:
+        prompt: "Run on rpi and press enter to proceed: sudo apt install proxmox-ve postfix open-iscsi pve-edk2-firmware-aarch64"
+
 - name: Proxmox post install
   hosts: proxmox
   roles:
     - proxmox-setup
 
 - name: Enable GPU passthrough on Proxmox
-  hosts: gpu-passthrough
+  hosts: gpupassthrough
   become: true
   roles:
-    - gpu-passthrough
+    - gpupassthrough
 
 # - name: Prepare Proxmox to virtualize Unraid
 #   hosts: proxmox_unraid

@@ -3,7 +3,7 @@
     path: /etc/default/grub
     regexp: ^GRUB_CMDLINE_LINUX_DEFAULT=
     line: GRUB_CMDLINE_LINUX_DEFAULT="quiet {{ cpu }}_iommu=on"
-  notify: update grub
+  notify: Update GRUB
 
 - name: Create vfio.conf
   ansible.builtin.copy:
@@ -14,18 +14,21 @@
       vfio_pci
       vfio_virqfd
     mode: u=rw,g=r,o=r
+  register: vfio
 
-- name: IOMMU interrupt mapping - 1
+- name: IOMMU enable unsafe interrupts
   ansible.builtin.copy:
     dest: /etc/modprobe.d/iommu_unsafe_interrupts.conf
     content: options vfio_iommu_type1 allow_unsafe_interrupts=1
     mode: u=rw,g=r,o=r
+  register: iommu
 
-- name: IOMMU interrupt mapping - 2
+- name: kvm ignore msrs
   ansible.builtin.copy:
     dest: /etc/modprobe.d/kvm.conf
     content: options kvm ignore_msrs=1
     mode: u=rw,g=r,o=r
+  register: kvm
 
 - name: Blacklist GPU drivers
   ansible.builtin.copy:
@@ -35,16 +38,17 @@
       blacklist nvidiafb
       blacklist rivafb
     mode: u=rw,g=r,o=r
+  register: blacklist
 
 - name: Add GPU to vfio
   ansible.builtin.copy:
     dest: /etc/modprobe.d/vfio.conf
-    content: options vfio-pci ids={{ vendor_ids }} disable_vga=1
+    content: options vfio-pci ids={{ vendorids }} disable_vga=1
     mode: u=rw,g=r,o=r
-  when: vendor_ids is defined
+  when: vendorids is defined
+  register: gpu
 
 - name: Update initramfs
   ansible.builtin.command: update-initramfs -u
-
-- name: Reboot the host
-  reboot: 
+  when: (vfio is changed) or (iommu is changed) or (kvm is changed) or (gpu is changed)
+  notify: Reboot

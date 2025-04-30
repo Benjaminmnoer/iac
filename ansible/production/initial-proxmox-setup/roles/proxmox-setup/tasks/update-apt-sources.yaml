@@ -7,7 +7,7 @@
       deb http://security.debian.org/debian-security bookworm-security main contrib
     dest: /etc/apt/sources.list
     backup: true
-    mode: preserve
+    mode: u=rw,g=r,o=r
 
 - name: Disable bookworm firmware (?)
   ansible.builtin.copy:
@@ -21,6 +21,7 @@
     state: absent
     update_cache: true
     filename: pve-enterprise
+    mode: 0644
 
 - name: Add pve-no-subscription repository
   ansible.builtin.apt_repository:
@@ -28,6 +29,7 @@
     state: present
     update_cache: true
     filename: pve-no-subscription
+    mode: 0644
 
 - name: Correct ceph apt sources
   ansible.builtin.copy:
@@ -37,4 +39,4 @@
       # deb https://enterprise.proxmox.com/debian/ceph-reef bookworm enterprise
       # deb http://download.proxmox.com/debian/ceph-reef bookworm no-subscription
     dest: /etc/apt/sources.list.d/ceph.list
-    mode: preserve
+    mode: u=rw,g=r,o=r

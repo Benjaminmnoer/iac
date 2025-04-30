@@ -9,5 +9,8 @@
       /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; }; fi"; };
     dest: /etc/apt/apt.conf.d/no-nag-script
     mode: u=rw,g=r,o=r
+  register: reinstall_pwt
+
 - name: Reinstall proxmox-widget-toolkit
   shell: apt-get --reinstall install proxmox-widget-toolkit
+  when: reinstall_pwt is changed
