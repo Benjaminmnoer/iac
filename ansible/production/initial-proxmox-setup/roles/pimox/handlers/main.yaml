@@ -1,0 +1,8 @@
+---
+- name: Reboot
+  ansible.builtin.reboot:
+
+- name: Apt update
+  ansible.builtin.apt:
+    update-cache: true
+  notify: Reboot

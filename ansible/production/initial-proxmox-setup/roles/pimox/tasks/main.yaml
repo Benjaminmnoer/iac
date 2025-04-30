@@ -1,0 +1,30 @@
+---
+- name: Update packages
+  ansible.builtin.apt:
+    update-cache: true
+    upgrade: yes
+  notify: Reboot
+
+- name: Ensure curl install
+  ansible.builtin.apt:
+    name: curl
+    state: present
+
+- name: Correct host IP
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: ^127.0.0.1
+    line: "{{ ansible_host }} {{ inventory_hostname }} {{ inventory_hostname_short }}"
+
+- name: Add proxmox port signing key
+  ansible.builtin.apt_key:
+    url: https://mirrors.apqa.cn/proxmox/debian/pveport.gpg
+    keyring: /usr/share/keyrings/pveport.gpg
+    state: present
+
+- name: Add proxmox port repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/pveport.gpg] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port"
+    state: present
+    filename: pveport
+  notify: apt update
