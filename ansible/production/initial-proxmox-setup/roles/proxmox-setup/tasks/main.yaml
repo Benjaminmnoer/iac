@@ -13,3 +13,6 @@
 
 - name: Set hosts file
   ansible.builtin.import_tasks: set-hosts.yaml
+
+- name: Configure users
+  ansible.builtin.import_tasks: configure-users.yaml
