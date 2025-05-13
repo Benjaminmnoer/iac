@@ -14,5 +14,12 @@
 - name: Set hosts file
   ansible.builtin.import_tasks: set-hosts.yaml
 
+- name: Setup sudo
+  ansible.builtin.import_tasks: setup-sudo.yaml
+
+- name: Setup ssh
+  ansible.builtin.import_tasks: setup-ssh.yaml
+
 - name: Configure users
-  ansible.builtin.import_tasks: configure-users.yaml
+  include_tasks: configure-users.yaml
+  loop: "{{users}}"

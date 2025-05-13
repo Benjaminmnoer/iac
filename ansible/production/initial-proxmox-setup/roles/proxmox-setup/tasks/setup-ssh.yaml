@@ -1,0 +1,27 @@
+---
+- name: Disable SSH password auth
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    validate: sshd -t -f %s
+  become: true
+
+- name: Allow root ssh
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: AllowUsers root
+    validate: sshd -t -f %s
+  become: true
+
+- name: Set root shell to bash
+  ansible.builtin.user:
+    name: root
+    shell: /bin/bash
+  become: true
+
+- name: Restart SSH service
+  ansible.builtin.systemd_service:
+    state: restarted
+    name: sshd
+  become: true

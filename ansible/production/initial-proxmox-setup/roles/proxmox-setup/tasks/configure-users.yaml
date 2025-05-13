@@ -1,62 +1,36 @@
 ---
-- name: Install sudo and zsh
+- name: Install zsh
   ansible.builtin.apt:
-    name: 
-    - sudo
-    - zsh
-    - git
+    name: zsh
     state: present
 
-- name: Add user
-  ansible.builtin.user:
-    name: "{{ create_user }}"
-    state: present
-    group: sudo
-    shell: /bin/zsh
-    create_home: yes
-
-- name: Create a directory if it does not exist
-  ansible.builtin.file:
-    path: "/home/{{create_user}}/.ssh"
-    state: directory
-    owner: "{{create_user}}"
-    mode: 0700
-
-- name: Set user SSH key
-  ansible.builtin.copy:
-    content: "{{user_public_key}}"
-    dest: "/home/{{create_user}}/.ssh/authorized_keys"
-    mode: 0644
-
-- name: Disable SSH password auth
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^#?PasswordAuthentication"
-    line: "PasswordAuthentication no"
-    validate: sshd -t -f %s
-
-- name: Allow user ssh
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    line: AllowUsers {{create_user}}
-    validate: sshd -t -f %s
-  become: true
-
-- name: Allow root ssh
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    line: AllowUsers root
-    validate: sshd -t -f %s
-  become: true
-
-- name: Restart SSH service
-  ansible.builtin.systemd_service:
-    state: restarted
-    name: sshd
-  become: true
-
-- name: Set root shell
-  ansible.builtin.user:
-    name: root
-    shell: /bin/zsh
+- name: Configure users
+  block:
+  - name: Create group
+    ansible.builtin.group:
+      name: "{{ item.group }}"
+      state: present
+  - name: Create users
+    ansible.builtin.user:
+      name: "{{ item.username }}"
+      state: present
+      group: "{{ item.group }}"
+      shell: "{{ item.shell }}"
+      create_home: yes
+  - name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: "/home/{{ item.username }}/.ssh"
+      state: directory
+      owner: "{{ item.username }}"
+      mode: 0700
+  - name: Set user SSH key
+    ansible.builtin.copy:
+      content: "{{ item.public_key }}"
+      dest: "/home/{{ item.username }}/.ssh/authorized_keys"
+      mode: 0644
+  - name: Allow user ssh
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      line: AllowUsers {{ item.username }}
+      validate: sshd -t -f %s
   become: true
