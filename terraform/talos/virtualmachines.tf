@@ -1,185 +1,197 @@
-resource "proxmox_virtual_environment_vm" "talos_cp_01" {
-  name        = "${var.talos_cp_01.name}"
-  description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","controlplane"]
-  node_name   = "${var.talos_cp_01.node}"
+resource "proxmox_virtual_environment_download_file" "talos_amd64_img" {
+  content_type = "iso"
+  datastore_id = "unraid-isos"
+  file_name    = "talos-${var.talos_version}-nocloud-amd64.iso"
+  node_name    = "azeroth"
+  url          = "https://factory.talos.dev/image/${var.talos_img_schematic}/${var.talos_version}/nocloud-amd64.iso"
+}
+
+resource "proxmox_virtual_environment_vm" "antonidas" {
+  name        = "antonidas"
+  description = "Talos Linux controlplane node. Managed by Terraform."
+  tags        = ["terraform", "talos", "controlplane"]
+  node_name   = "azeroth"
   on_boot     = true
 
   cpu {
-    cores = var.talos_cp_01.cpu
-    type = "${var.talos_node_defaults.cputype}"
+    cores = 4
+    type  = "host"
   }
 
   memory {
-    dedicated = var.talos_cp_01.memory
+    dedicated = 8192
   }
 
   agent {
-    enabled = var.talos_node_defaults.agent
+    enabled = true
   }
 
   network_device {
-    bridge = "${var.talos_node_defaults.network_device}"
+    bridge  = "vmbr0"
+    vlan_id = 3
   }
 
   disk {
-    datastore_id = "${var.talos_node_defaults.disk.datastore_id}"
-    file_id      = "${var.talos_node_defaults.disk.file_id}"
-    file_format  = "${var.talos_node_defaults.disk.file_format}"
-    interface    = "${var.talos_node_defaults.disk.interface}"
-    size         = var.talos_cp_01.disksize
+    datastore_id = "local-lvm"
+    file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
+    file_format  = "raw"
+    interface    = "scsi0"
+    size         = 100
   }
 
   operating_system {
-    type = "${var.talos_node_defaults.operating_system}" # Linux Kernel 2.6 - 5.X.
+    type = "l26" # Linux Kernel 2.6 - 5.X.
   }
 
   initialization {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_cp_01.ip}/24"
+        address = "${var.antonidas_ip}/24"
         gateway = var.default_gateway
       }
     }
   }
 }
 
-resource "proxmox_virtual_environment_vm" "talos_cp_02" {
-  name        = "${var.talos_cp_02.name}"
-  description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","controlplane"]
-  node_name   = "${var.talos_cp_02.node}"
+resource "proxmox_virtual_environment_vm" "jaina" {
+  name        = "jaina"
+  description = "Talos Linux worker node. Managed by Terraform."
+  tags        = ["terraform", "talos", "worker"]
+  node_name   = "azeroth"
   on_boot     = true
 
   cpu {
-    cores = var.talos_cp_02.cpu
-    type = "${var.talos_node_defaults.cputype}"
+    cores = 4
+    type  = "host"
   }
 
   memory {
-    dedicated = var.talos_cp_02.memory
+    dedicated = 8192
   }
 
   agent {
-    enabled = var.talos_node_defaults.agent
+    enabled = true
   }
 
   network_device {
-    bridge = "${var.talos_node_defaults.network_device}"
+    bridge  = "vmbr0"
+    vlan_id = 3
   }
 
   disk {
-    datastore_id = "${var.talos_node_defaults.disk.datastore_id}"
-    file_id      = "${var.talos_node_defaults.disk.file_id}"
-    file_format  = "${var.talos_node_defaults.disk.file_format}"
-    interface    = "${var.talos_node_defaults.disk.interface}"
-    size         = var.talos_cp_02.disksize
+    datastore_id = "local-lvm"
+    file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
+    file_format  = "raw"
+    interface    = "scsi0"
+    size         = 100
   }
 
   operating_system {
-    type = "${var.talos_node_defaults.operating_system}" # Linux Kernel 2.6 - 5.X.
+    type = "l26" # Linux Kernel 2.6 - 5.X.
   }
 
   initialization {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_cp_02.ip}/24"
+        address = "${var.jaina_ip}/24"
         gateway = var.default_gateway
       }
     }
   }
 }
 
-resource "proxmox_virtual_environment_vm" "talos_worker_01" {
-  name        = "${var.talos_worker_01.name}"
-  description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","worker"]
-  node_name   = "${var.talos_worker_01.node}"
+resource "proxmox_virtual_environment_vm" "khadgar" {
+  name        = "khadgar"
+  description = "Talos Linux worker node. Managed by Terraform."
+  tags        = ["terraform", "talos", "worker"]
+  node_name   = "northrend"
   on_boot     = true
 
   cpu {
-    cores = var.talos_worker_01.cpu
-    type = "${var.talos_node_defaults.cputype}"
+    cores = 8
+    type  = "host"
   }
 
   memory {
-    dedicated = var.talos_worker_01.memory
+    dedicated = 4096
   }
 
   agent {
-    enabled = var.talos_node_defaults.agent
+    enabled = true
   }
 
   network_device {
-    bridge = "${var.talos_node_defaults.network_device}"
+    bridge  = "vmbr0"
+    vlan_id = 3
   }
 
   disk {
-    datastore_id = "${var.talos_node_defaults.disk.datastore_id}"
-    file_id      = "${var.talos_node_defaults.disk.file_id}"
-    file_format  = "${var.talos_node_defaults.disk.file_format}"
-    interface    = "${var.talos_node_defaults.disk.interface}"
-    size         = var.talos_worker_01.disksize
+    datastore_id = "data"
+    file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
+    file_format  = "raw"
+    interface    = "scsi0"
+    size         = 100
   }
 
   operating_system {
-    type = "${var.talos_node_defaults.operating_system}" # Linux Kernel 2.6 - 5.X.
+    type = "l26" # Linux Kernel 2.6 - 5.X.
   }
 
   initialization {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_worker_01.ip}/24"
+        address = "${var.khadgar_ip}/24"
         gateway = var.default_gateway
       }
     }
   }
 }
 
-resource "proxmox_virtual_environment_vm" "talos_worker_02" {
-  name        = "${var.talos_worker_02.name}"
-  description = "${var.talos_node_defaults.description}"
-  tags        = ["terraform","talos","worker"]
-  node_name   = "${var.talos_worker_02.node}"
+resource "proxmox_virtual_environment_vm" "rhonin" {
+  name        = "rhonin"
+  description = "Talos Linux workernode. Managed by Terraform."
+  tags        = ["terraform", "talos", "worker"]
+  node_name   = "northrend"
   on_boot     = true
 
   cpu {
-    cores = var.talos_worker_02.cpu
-    type = "${var.talos_node_defaults.cputype}"
+    cores = 8
+    type  = "host"
   }
 
   memory {
-    dedicated = var.talos_worker_02.memory
+    dedicated = 4096
   }
 
   agent {
-    enabled = var.talos_node_defaults.agent
+    enabled = true
   }
 
   network_device {
-    bridge = "${var.talos_node_defaults.network_device}"
+    bridge  = "vmbr0"
+    vlan_id = 3
   }
 
   disk {
-    datastore_id = "${var.talos_node_defaults.disk.datastore_id}"
-    file_id      = "${var.talos_node_defaults.disk.file_id}"
-    file_format  = "${var.talos_node_defaults.disk.file_format}"
-    interface    = "${var.talos_node_defaults.disk.interface}"
-    size         = var.talos_worker_02.disksize
+    datastore_id = "data"
+    file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
+    file_format  = "raw"
+    interface    = "scsi0"
+    size         = 100
   }
 
   operating_system {
-    type = "${var.talos_node_defaults.operating_system}" # Linux Kernel 2.6 - 5.X.
+    type = "l26" # Linux Kernel 2.6 - 5.X.
   }
 
   initialization {
     datastore_id = "local"
     ip_config {
       ipv4 {
-        address = "${var.talos_worker_02.ip}/24"
+        address = "${var.rhonin_ip}/24"
         gateway = var.default_gateway
       }
     }

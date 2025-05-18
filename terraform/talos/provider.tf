@@ -2,22 +2,25 @@ terraform {
   required_providers {
     proxmox = {
       source = "bpg/proxmox"
-      version = "0.69.1"
+      version = "0.77.1"
     }
     talos = {
       source = "siderolabs/talos"
-      version = "0.7.0"
+      version = "0.8.0"
     }
   }
-  backend "pg" {
-    conn_str = "postgres://192.168.50.104/terraform"
+  
+  backend "azurerm" {
+    resource_group_name  = "tfstate"
+    storage_account_name = "tfstate27519"
+    container_name       = "tfstate"
+    key                  = "talos.terraform.tfstate"
   }
 }
 
 provider "proxmox" {
   endpoint = var.virtual_environment_endpoint
-  username = var.virtual_environment_username
-  password = var.virtual_environment_password
+  api_token = var.virtual_environment_api_token
 
   min_tls = 1.2
   insecure = true
@@ -26,6 +29,7 @@ provider "proxmox" {
 
   ssh {
     agent = true
+    username    = "terraform"
     private_key = file("~/.ssh/terraform_id_25519")
   }
 }
