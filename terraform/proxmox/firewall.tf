@@ -71,6 +71,11 @@ resource "proxmox_virtual_environment_firewall_ipset" "trusted_clients" {
   comment = "Managed by Terraform"
 
   cidr {
+    name    = "192.168.1.4"
+    comment = "icecrown"
+  }
+
+  cidr {
     name    = "192.168.1.5"
     comment = "laptop - lan"
   }

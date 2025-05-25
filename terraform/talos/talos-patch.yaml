@@ -1,3 +1,15 @@
+version: v1alpha1
+machine:
+  certSANs:
+    - kirintor
+    - kirintor.benjaminmnoer.dk
+  network:
+    extraHostEntries:
+      - ip: 192.168.2.6
+        # The host alias.
+        aliases:
+          - kirintor
+          - kirintor.benjaminmnoer.dk
 cluster:
   network:
     cni:

@@ -1,3 +1,12 @@
+resource "proxmox_virtual_environment_vm" "icecrown" {
+  name = "icecrown"
+  description = "Manjaro Gaming VM. Managed by Terraform"
+}
+
+resource "proxmox_virtual_environment_vm" "stormwind" {
+  
+}
+
 resource "proxmox_virtual_environment_file" "arch_user_data_cloud_config" {
   content_type = "snippets"
   datastore_id = "local"
