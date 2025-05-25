@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: onedev
+  namespace: onedev
+spec:
+  releaseName: onedev
+  chart:
+    spec:
+      chart: onedev
+      sourceRef:
+        kind: HelmRepository
+        name: onedev
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
