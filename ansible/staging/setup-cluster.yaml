@@ -5,23 +5,18 @@
     - name: github_pat
       prompt: "Github PAT"
   vars:
-    # docker_version: "28.0.1"
-    # flux_version: "2.5.1"
-    # cilium_cli_version: "0.18.0"
-    talos_version: "1.9.5"
-    kubernetes_version: "1.32.2"
-    cilium_version: "1.7.2"
-    cluster_name: "talos-cluster"
+    talos_version: "1.10.2"
+    kubernetes_version: "1.33.1"
+    hubble_version: "1.17.3"
+    cluster_name: "Istari"
     flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
-    cluster_location: "/home/benjaminmn/.talos/clusters/{{ cluster_name }}"
-    kubeconfig_path: "/home/benjaminmn/.kube/config"
 
   tasks:
     - name: Update system packages
       become: true
       pacman:
-        update_cache: yes
-        upgrade: yes
+        update_cache: true
+        upgrade: true
 
     - name: Install required pacman packages
       become: true
@@ -36,32 +31,37 @@
           - cilium-cli
         state: present
 
-    - name: Install hubble
+    - name: Download Hubble
       become: true
-      shell: |
-        HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
-        HUBBLE_ARCH=amd64
-        curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-        sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
-        sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
-        rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-      args:
-        creates: /usr/local/bin/hubble
+      get_url:
+        url: https://github.com/cilium/hubble/releases/download/v{{ hubble_version }}/hubble-linux-amd64.tar.gz
+        dest: /tmp/hubble-linux-amd64.tar.gz
+        mode: u=rwx,g=rx,o=rx
+        owner: root
+        group: root
+        checksum: sha256:https://github.com/cilium/hubble/releases/download/v{{ hubble_version }}/hubble-linux-amd64.tar.gz.sha256sum
+
+    - name: Install Hubble
+      become: true
+      unarchive:
+        src: /tmp/hubble-linux-amd64.tar.gz
+        dest: /usr/local/bin
 
     - name: Download talosctl checksums
       get_url:
-        url: https://github.com/siderolabs/talos/releases/download/v{{talos_version}}/sha256sum.txt
+        url: https://github.com/siderolabs/talos/releases/download/v{{ talos_version }}/sha256sum.txt
         dest: /tmp/talosctl-sha256sum.txt
+        mode: u=rwx,g=rx,o=rx
 
     - name: Install talosctl
       become: true
       get_url:
-        url: https://github.com/siderolabs/talos/releases/download/v{{talos_version}}/talosctl-linux-amd64
+        url: https://github.com/siderolabs/talos/releases/download/v{{ talos_version }}/talosctl-linux-amd64
         dest: /usr/local/bin/talosctl
-        checksum: 'sha256:{{ checksum[0].split()[0] }}'
+        checksum: "sha256:{{ checksum[0].split()[0] }}"
         owner: root
         group: root
-        mode: 0755
+        mode: u=rwx,g=rx,o=rx
       vars:
         checksum: '{{ lookup("file", "/tmp/talosctl-sha256sum.txt").splitlines() | select("match", ".*talosctl-linux-amd64$") | list }}'
 
@@ -72,8 +72,8 @@
         --kubernetes-version {{ kubernetes_version }}
         --config-patch @talos-patch.yaml
         --skip-k8s-node-readiness-check
-        --controlplanes=2
-        --workers=2
+        --controlplanes=1
+        --workers=3
 
     - name: Add Cilium Helm repository
       kubernetes.core.helm_repository:
@@ -81,50 +81,29 @@
         repo_url: https://helm.cilium.io
         force_update: true
 
-    - name: Update Helm repositories
-      command: helm repo update
-
-    - name: Install Gateway API CRDs
-      shell: | 
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
-
     - name: Install Cilium using Helm
-      command: >
-        helm install cilium cilium/cilium
-        --namespace kube-system
-        --set ipam.mode=kubernetes
-        --set kubeProxyReplacement=true
-        --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-        --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-        --set cgroup.autoMount.enabled=false
-        --set cgroup.hostRoot=/sys/fs/cgroup
-        --set k8sServiceHost=localhost
-        --set k8sServicePort=7445
-        --set hubble.relay.enabled=true
-        --set hubble.ui.enabled=true
+      kubernetes.core.helm:
+        name: cilium
+        chart_ref: cilium/cilium
+        release_namespace: kube-system
+        update_repo_cache: true
+        set_values:
+          - value: ipam.mode=kubernetes
+          - value: kubeProxyReplacement=true
+          - value: securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
+          - value: securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
+          - value: cgroup.autoMount.enabled=false
+          - value: cgroup.hostRoot=/sys/fs/cgroup
+          - value: k8sServiceHost=localhost
+          - value: k8sServicePort=7445
+          - value: hubble.relay.enabled=true
+          - value: hubble.ui.enabled=true
 
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
 
     - name: DNS test
       command: kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
-
-    # - name: Create namespace
-    #   command: kubectl create namespace cilium-test-1
-        
-    # - name: Label namespace
-    #   command: kubectl label namespace cilium-test-1 pod-security.kubernetes.io/enforce=privileged
-
-    # - name: Cilium test
-    #   command: cilium-cli connectivity test
-
-    # - name: Remove namespace
-    #   command: kubectl delete namespace cilium-test-1
 
     - name: Bootstrap Flux into Kubernetes
       command: >
