@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: csi-smb-driver
+  namespace: kube-system
+spec:
+  releaseName: csi-smb-driver
+  chart:
+    spec:
+      chart: csi-driver-smb
+      version: v1.14.0
+      sourceRef:
+        kind: HelmRepository
+        name: csi-driver-smb
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    controller:
+      runOnControlPlane: true
