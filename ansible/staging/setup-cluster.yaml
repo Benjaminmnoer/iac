@@ -31,6 +31,19 @@
           - cilium-cli
         state: present
 
+    - name: Create a data container
+      community.docker.docker_container:
+        name: smb-server
+        image: dperson/samba
+        restart_policy: always
+        state: started
+        published_ports:
+          - "139:139"
+          - "445:445"
+        volumes:
+          - /Storage/smb-share/:/shares/:z
+        command: '-s "Shares;/shares;yes;no;no;test" -u "test;test" -p'
+
     - name: Download Hubble
       become: true
       get_url:
