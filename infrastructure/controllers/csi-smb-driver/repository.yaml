@@ -1,8 +1,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: onedev
-  namespace: onedev
+  name: csi-driver-smb
+  namespace: kube-system
 spec:
   interval: 1m
   url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
