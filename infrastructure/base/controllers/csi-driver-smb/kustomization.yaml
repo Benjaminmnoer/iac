@@ -4,4 +4,3 @@ namespace: kube-system
 resources:
   - repository.yaml
   - release.yaml
-  - storage-class.yaml
