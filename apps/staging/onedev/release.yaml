@@ -17,6 +17,7 @@ spec:
       retries: 3
   values:
     persistence:
+      storageClassName: smb-storage-class
       selector:
         matchLabels:
           app: onedev
