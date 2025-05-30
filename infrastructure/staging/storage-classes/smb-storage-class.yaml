@@ -5,7 +5,7 @@ metadata:
   name: smb-storage-class
 provisioner: smb.csi.k8s.io
 parameters:
-  source: //127.0.0.1/shares
+  source: //smb-server/shares
   # if csi.storage.k8s.io/provisioner-secret is provided, will create a sub directory
   # with PV name under source
   csi.storage.k8s.io/provisioner-secret-name: smb-creds
