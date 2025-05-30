@@ -18,3 +18,5 @@ spec:
   values:
     persistence:
       storageClassName: smb-storage-class
+    service:
+      type: NodePort
