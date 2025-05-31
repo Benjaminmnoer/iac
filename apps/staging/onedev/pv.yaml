@@ -22,7 +22,7 @@ spec:
     # make sure this value is unique for every share in the cluster
     volumeHandle: smb-server/shares#onedev#
     volumeAttributes:
-      source: //smb-server/shares
+      source: //smb-server/shares/onedev
     nodeStageSecretRef:
       name: smb-creds
       namespace: kube-system
