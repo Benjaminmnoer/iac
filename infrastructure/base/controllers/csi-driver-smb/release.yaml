@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: csi-driver-smb
-  namespace: kube-system
+  namespace: smb-system
 spec:
   releaseName: csi-driver-smb
   chart:
