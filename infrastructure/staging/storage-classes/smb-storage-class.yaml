@@ -9,9 +9,9 @@ parameters:
   # if csi.storage.k8s.io/provisioner-secret is provided, will create a sub directory
   # with PV name under source
   csi.storage.k8s.io/provisioner-secret-name: smb-creds
-  csi.storage.k8s.io/provisioner-secret-namespace: kube-system
+  csi.storage.k8s.io/provisioner-secret-namespace: smb-system
   csi.storage.k8s.io/node-stage-secret-name: smb-creds
-  csi.storage.k8s.io/node-stage-secret-namespace: kube-system
+  csi.storage.k8s.io/node-stage-secret-namespace: smb-system
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
