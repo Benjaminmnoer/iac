@@ -25,4 +25,4 @@ spec:
       source: //smb-server/shares/onedev
     nodeStageSecretRef:
       name: smb-creds
-      namespace: kube-system
+      namespace: smb-system
