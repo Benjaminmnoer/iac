@@ -20,6 +20,8 @@ spec:
     k8sServiceHost: localhost
     k8sServicePort: 7445
     kubeProxyReplacement: true
+    gatewayAPI:
+      enabled: true
     ipam:
       mode: kubernetes
     hubble:
