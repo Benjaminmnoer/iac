@@ -1,33 +1,44 @@
 ---
 - name: Tears down local Talos Kubernetes cluster
   hosts: localhost
+  vars:
+    cluster_name: "Istari"
   tasks:
-    # - name: Remove Cilium helm repository # Why is this needed?
-    #   command: >
-    #     helm repo remove cilium
-    - name: Get running containers
-      docker_host_info:
-        containers: yes
-      register: docker_info
-    - name: Stop running containers
-      docker_container:
-        name: "{{ item }}"
-        state: stopped
-      loop: "{{ docker_info.containers | map(attribute='Id') | list }}"
+    - name: Remove controlplane
+      community.docker.docker_container:
+        name: "{{ cluster_name }}-controlplane-{{ item }}"
+        state: absent
+      with_sequence: count=1
+    - name: Remove workers
+      community.docker.docker_container:
+        name: "{{ cluster_name }}-worker-{{ item }}"
+        state: absent
+      with_sequence: count=3
+    - name: Remove smb-server
+      community.docker.docker_container:
+        name: smb-server
+        state: absent
+    - name: Check for talos cluster folder
+      stat:
+        path: "~/.talos/clusters/{{ cluster_name }}"
+      register: talos_cluster
     - name: Delete talos cluster
-      command: talosctl cluster destroy
-    - name: Docker prune
-      community.docker.docker_prune:
-        containers: true
-        images: false
-        networks: true
-        volumes: true
-        builder_cache: false
+      command: talosctl cluster destroy --name {{ cluster_name }}
+      when: talos_cluster.stat.exists
+      register: talos_destroy
+      changed_when: talos_destroy.rc == 0
     - name: Cleanup talos config
       ansible.builtin.file:
         path: ~/.talos/
         state: absent
-    - name: Delete kube config
+    - name: Cleanup kube config
       ansible.builtin.file:
         path: ~/.kube/
         state: absent
+    - name: Cleanup docker
+      community.docker.docker_prune:
+        containers: true
+        images: false # To avoid redownloading Talos image
+        networks: true
+        volumes: true
+        builder_cache: true

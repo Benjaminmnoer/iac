@@ -10,6 +10,7 @@
     hubble_version: "1.17.3"
     cluster_name: "Istari"
     flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
+    key_fp: "6B021152E518C20179D5558C51DE92958775C0C2"
 
   tasks:
     - name: Update system packages
@@ -29,20 +30,8 @@
           - jq
           - wget
           - cilium-cli
+          - python-kubernetes
         state: present
-
-    - name: Create a data container
-      community.docker.docker_container:
-        name: smb-server
-        image: dperson/samba
-        restart_policy: always
-        state: started
-        published_ports:
-          - "139:139"
-          - "445:445"
-        volumes:
-          - /Storage/smb-share/:/shares/:z
-        command: '-s "Shares;/shares;yes;no;no;test" -u "test;test" -p'
 
     - name: Download Hubble
       become: true
@@ -87,6 +76,29 @@
         --skip-k8s-node-readiness-check
         --controlplanes=1
         --workers=3
+      register: talos_cluster
+      changed_when: talos_cluster.rc == 0
+
+    - name: Create cilium namespace
+      kubernetes.core.k8s:
+        name: cilium
+        api_version: v1
+        kind: Namespace
+        state: present
+        definition:
+          metadata:
+            labels:
+              pod-security.kubernetes.io/enforce: privileged
+
+    - name: Install gateway CRDs
+      command: kubectl apply -f "{{ item }}"
+      loop:
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml"
 
     - name: Add Cilium Helm repository
       kubernetes.core.helm_repository:
@@ -98,7 +110,8 @@
       kubernetes.core.helm:
         name: cilium
         chart_ref: cilium/cilium
-        release_namespace: kube-system
+        release_namespace: cilium
+        create_namespace: true
         update_repo_cache: true
         set_values:
           - value: ipam.mode=kubernetes
@@ -109,14 +122,34 @@
           - value: cgroup.hostRoot=/sys/fs/cgroup
           - value: k8sServiceHost=localhost
           - value: k8sServicePort=7445
-          - value: hubble.relay.enabled=true
-          - value: hubble.ui.enabled=true
+          - value: gatewayAPI.enabled=true
+
+    - name: Create a smb container
+      community.docker.docker_container:
+        name: smb-server
+        image: dperson/samba
+        restart_policy: always
+        state: started
+        networks:
+          - name: "{{ cluster_name }}"
+            aliases:
+              - "smb-server"
+        published_ports:
+          - "139:139"
+          - "445:445"
+        volumes:
+          - /Storage/smb-share/:/shares/:z
+        command: '-s "Shares;/shares;yes;no;no;test" -u "test;test" -p'
 
     - name: Verify Cilium CLI is working
-      command: cilium-cli status --wait
+      command: cilium-cli status -n cilium --wait
+      register: cilium_test
+      changed_when: cilium_test.rc == 0
 
     - name: DNS test
       command: kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
+      register: dns_test
+      changed_when: dns_test.rc == 0
 
     - name: Bootstrap Flux into Kubernetes
       command: >
@@ -126,5 +159,17 @@
         --branch="master"
         --path="clusters/staging"
         --personal
+      register: flux_bootstrap
+      changed_when: flux_bootstrap.rc == 0
       environment:
         GITHUB_TOKEN: "{{ github_pat }}"
+
+    - name: Add decryption key
+      shell: >
+        set -o pipefail &&
+        gpg --export-secret-keys --armor "{{ key_fp }}" |
+        kubectl create secret generic sops-gpg
+        --namespace=flux-system
+        --from-file=sops.asc=/dev/stdin
+      register: decryption_key
+      changed_when: decryption_key.rc == 0
