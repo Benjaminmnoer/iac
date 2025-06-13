@@ -21,5 +21,3 @@ spec:
       selector:
         matchLabels:
           app: onedev
-    service:
-      type: NodePort
