@@ -6,3 +6,4 @@ resources:
   - pv.yaml
   - repository.yaml
   - release.yaml
+  - gateway.yaml
