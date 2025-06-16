@@ -2,6 +2,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: onedev-gateway
+  namespace: onedev
 spec:
   gatewayClassName: cilium
   listeners:
@@ -13,6 +14,9 @@ spec:
       certificateRefs:
       - kind: Secret
         name: test-cert
+    allowedRoutes:
+      namespaces:
+        from: All
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -20,7 +24,7 @@ metadata:
   name: onedev-route
 spec:
   parentRefs:
-  - name: tls-gateway
+  - name: onedev-gateway
   hostnames:
   - "onedev.istari.benjaminmnoer.dk"
   rules:
