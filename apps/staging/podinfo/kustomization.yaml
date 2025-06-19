@@ -4,5 +4,6 @@ resources:
   - namespace.yaml
   - repository.yaml
   - release.yaml
+  - httproute.yaml
   # - gateway.yaml
   # - network-policy.yaml
