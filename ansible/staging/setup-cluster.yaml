@@ -123,6 +123,9 @@
           - value: k8sServiceHost=localhost
           - value: k8sServicePort=7445
           - value: gatewayAPI.enabled=true
+          - value: gatewayAPI.hostNetwork.enabled=true
+          - value: gatewayAPI.enableAlpn=true
+          - value: gatewayAPI.enableAppProtocol=true
 
     - name: Create a smb container
       community.docker.docker_container:
