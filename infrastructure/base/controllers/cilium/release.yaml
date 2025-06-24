@@ -24,8 +24,8 @@ spec:
       enabled: true
       enableAlpn: true
       enableAppProtocol: true
-      hostNetwork:
-        enabled: true
+      # hostNetwork:
+      #   enabled: true
     ipam:
       mode: kubernetes
     hubble:
