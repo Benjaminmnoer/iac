@@ -50,16 +50,16 @@ resource "talos_machine_configuration_apply" "khadgar_config_apply" {
   node                        = var.khadgar_ip
 }
 
-resource "talos_machine_configuration_apply" "rhonin_config_apply" {
-  depends_on                  = [proxmox_virtual_environment_vm.rhonin, talos_machine_configuration_apply.antonidas_config_apply]
-  client_configuration        = talos_machine_secrets.machine_secrets.client_configuration
-  machine_configuration_input = data.talos_machine_configuration.machineconfig_worker.machine_configuration
-  count                       = 1
-  node                        = var.rhonin_ip
-}
+# resource "talos_machine_configuration_apply" "rhonin_config_apply" {
+#   depends_on                  = [proxmox_virtual_environment_vm.rhonin, talos_machine_configuration_apply.antonidas_config_apply]
+#   client_configuration        = talos_machine_secrets.machine_secrets.client_configuration
+#   machine_configuration_input = data.talos_machine_configuration.machineconfig_worker.machine_configuration
+#   count                       = 1
+#   node                        = var.rhonin_ip
+# }
 
 resource "talos_machine_bootstrap" "bootstrap" {
-  depends_on           = [talos_machine_configuration_apply.jaina_config_apply, talos_machine_configuration_apply.khadgar_config_apply, talos_machine_configuration_apply.rhonin_config_apply]
+  depends_on           = [talos_machine_configuration_apply.jaina_config_apply, talos_machine_configuration_apply.khadgar_config_apply ]# , talos_machine_configuration_apply.rhonin_config_apply]
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
   node                 = var.antonidas_ip
 }

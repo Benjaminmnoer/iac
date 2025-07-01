@@ -15,11 +15,11 @@ resource "proxmox_virtual_environment_vm" "antonidas" {
 
   cpu {
     cores = 4
-    type  = "host"
+    type  = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 8192
+    dedicated = 16384
   }
 
   agent {
@@ -63,11 +63,11 @@ resource "proxmox_virtual_environment_vm" "jaina" {
 
   cpu {
     cores = 4
-    type  = "host"
+    type  = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 8192
+    dedicated = 16384
   }
 
   agent {
@@ -111,11 +111,11 @@ resource "proxmox_virtual_environment_vm" "khadgar" {
 
   cpu {
     cores = 8
-    type  = "host"
+    type  = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 4096
+    dedicated = 8192
   }
 
   agent {
@@ -150,50 +150,50 @@ resource "proxmox_virtual_environment_vm" "khadgar" {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "rhonin" {
-  name        = "rhonin"
-  description = "Talos Linux workernode. Managed by Terraform."
-  tags        = ["terraform", "talos", "worker"]
-  node_name   = "northrend"
-  on_boot     = true
+# resource "proxmox_virtual_environment_vm" "rhonin" {
+#   name        = "rhonin"
+#   description = "Talos Linux workernode. Managed by Terraform."
+#   tags        = ["terraform", "talos", "worker"]
+#   node_name   = "northrend"
+#   on_boot     = true
 
-  cpu {
-    cores = 8
-    type  = "host"
-  }
+#   cpu {
+#     cores = 8
+#     type  = "x86-64-v2-AES"
+#   }
 
-  memory {
-    dedicated = 4096
-  }
+#   memory {
+#     dedicated = 4096
+#   }
 
-  agent {
-    enabled = true
-  }
+#   agent {
+#     enabled = true
+#   }
 
-  network_device {
-    bridge  = "vmbr0"
-    vlan_id = 3
-  }
+#   network_device {
+#     bridge  = "vmbr0"
+#     vlan_id = 3
+#   }
 
-  disk {
-    datastore_id = "data"
-    file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
-    file_format  = "raw"
-    interface    = "scsi0"
-    size         = 100
-  }
+#   disk {
+#     datastore_id = "data"
+#     file_id      = proxmox_virtual_environment_download_file.talos_amd64_img.id
+#     file_format  = "raw"
+#     interface    = "scsi0"
+#     size         = 100
+#   }
 
-  operating_system {
-    type = "l26" # Linux Kernel 2.6 - 5.X.
-  }
+#   operating_system {
+#     type = "l26" # Linux Kernel 2.6 - 5.X.
+#   }
 
-  initialization {
-    datastore_id = "local"
-    ip_config {
-      ipv4 {
-        address = "${var.rhonin_ip}/24"
-        gateway = var.default_gateway
-      }
-    }
-  }
-}
+#   initialization {
+#     datastore_id = "local"
+#     ip_config {
+#       ipv4 {
+#         address = "${var.rhonin_ip}/24"
+#         gateway = var.default_gateway
+#       }
+#     }
+#   }
+# }

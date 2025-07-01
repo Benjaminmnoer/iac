@@ -22,7 +22,7 @@ variable "talos_img_schematic" {
 
 variable "talos_version" {
   type = string
-  default = "1.10.2"
+  default = "1.10.4"
 }
 
 variable "antonidas_ip" {
