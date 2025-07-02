@@ -2,14 +2,14 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.77.0"
+      version = "0.78.2"
     }
   }
   backend "azurerm" {
     resource_group_name  = "tfstate"
     storage_account_name = "tfstate27519"
     container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+    key                  = "proxmox.terraform.tfstate"
   }
 }
 
