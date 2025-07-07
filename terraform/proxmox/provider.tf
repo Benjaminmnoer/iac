@@ -16,6 +16,8 @@ terraform {
 provider "proxmox" {
   endpoint  = var.virtual_environment_endpoint
   api_token = var.virtual_environment_api_token
+  # username  = var.virtual_environment_username
+  # password  = var.virtual_environment_password
 
   min_tls = 1.2
 
@@ -25,7 +27,19 @@ provider "proxmox" {
 
   ssh {
     agent       = true
-    username    = "terraform"
-    private_key = file("~/.ssh/terraform_id_25519")
+    username    = "root"
+    private_key = file("~/.ssh/id_ed25519")
+    node {
+      name = "northrend"
+      address = "192.168.2.2"
+    }
+    node {
+      name = "azeroth"
+      address = "192.168.2.3"
+    }
+    node {
+      name = "maelstrom"
+      address = "192.168.2.4"
+    }
   }
 }

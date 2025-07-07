@@ -63,6 +63,7 @@ resource "proxmox_virtual_environment_vm" "icecrown01" {
   tags        = ["terraform", "arch", "gaming", "manjaro"]
   node_name   = "northrend"
   on_boot     = false
+  started     = false
 
   machine = "q35"
   bios    = "ovmf"
@@ -73,7 +74,7 @@ resource "proxmox_virtual_environment_vm" "icecrown01" {
     pre_enrolled_keys = true
   }
 
-  boot_order = [ "ide2" ]
+  boot_order = ["ide2"]
 
   cpu {
     cores = 16
