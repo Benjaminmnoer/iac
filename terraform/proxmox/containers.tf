@@ -44,9 +44,7 @@ resource "proxmox_virtual_environment_container" "gryphon_master" {
 
   operating_system {
     template_file_id = "unraid-isos:vztmpl/archlinux-current-20231124_arm64.tar.xz"
-    # Or you can use a volume ID, as obtained from a "pvesm list <storage>"
-    # template_file_id = "local:vztmpl/jammy-server-cloudimg-amd64.tar.gz"
-    type = "ubuntu"
+    type = "archlinux"
   }
 
   startup {
@@ -118,5 +116,14 @@ resource "proxmox_virtual_environment_firewall_rules" "gryphon_master" {
   rule {
     security_group = proxmox_virtual_environment_cluster_firewall_security_group.https.name
     comment        = "From security group. Managed by Terraform"
+  }
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    comment = "Allow 6443 - Talos"
+    dport   = "6443"
+    proto   = "tcp"
+    log     = "info"
   }
 }

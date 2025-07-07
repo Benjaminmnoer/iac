@@ -6,7 +6,7 @@ metadata:
 spec:
   parentRefs:
   - name: istari-gateway
-    namespace: cilium
+    namespace: kube-system
   hostnames:
   - "podinfo.istari.benjaminmnoer.dk"
   rules:
@@ -17,3 +17,4 @@ spec:
     backendRefs:
     - name: podinfo
       port: 9898
+      namespace: podinfo

@@ -130,6 +130,7 @@
           - value: k8sClientRateLimit.qps=10
           - value: k8sClientRateLimit.burst=20
           - value: securityContext.privileged=true
+          - value: operator.replicas=1
 
     - name: Create a smb container
       community.docker.docker_container:
@@ -149,7 +150,7 @@
         command: '-s "Shares;/shares;yes;no;no;test" -u "test;test" -p'
 
     - name: Verify Cilium CLI is working
-      command: cilium-cli status -n cilium --wait
+      command: cilium-cli status --wait
       register: cilium_test
       changed_when: cilium_test.rc == 0
 

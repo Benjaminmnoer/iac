@@ -5,9 +5,9 @@
     - name: github_pat
       prompt: "Github PAT"
   vars:
-    talos_version: "1.10.2"
+    talos_version: "1.10.4"
     kubernetes_version: "1.33.1"
-    cilium_version: "1.17.4"
+    hubble_version: "1.17.5"
     cluster_name: "Kirin Tor"
     flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
 
@@ -70,47 +70,51 @@
     - name: Update Helm repositories
       command: helm repo update
 
-    # - name: Install Gateway API CRDs
-    #   shell: |
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
-    #     kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+    - name: Install gateway CRDs
+      command: kubectl apply -f "{{ item }}"
+      loop:
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml"
+        - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml"
 
     - name: Install Cilium using Helm
-      command: >
-        helm install cilium cilium/cilium
-        --namespace kube-system
-        --set ipam.mode=kubernetes
-        --set kubeProxyReplacement=true
-        --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-        --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-        --set cgroup.autoMount.enabled=false
-        --set cgroup.hostRoot=/sys/fs/cgroup
-        --set k8sServiceHost=192.168.3.3
-        --set k8sServicePort=6443
-        --set hubble.relay.enabled=true
-        --set hubble.ui.enabled=true
+      kubernetes.core.helm:
+        name: cilium
+        chart_ref: cilium/cilium
+        release_namespace: kube-system
+        create_namespace: true
+        update_repo_cache: true
+        chart_version: 1.17.5
+        set_values:
+          - value: ipam.mode=kubernetes
+          - value: kubeProxyReplacement=true
+          - value: securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
+          - value: securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
+          - value: cgroup.autoMount.enabled=false
+          - value: cgroup.hostRoot=/sys/fs/cgroup
+          - value: k8sServiceHost=192.168.3.3
+          - value: k8sServicePort=6443
+          - value: gatewayAPI.enabled=true
+          - value: gatewayAPI.enableAlpn=true
+          - value: gatewayAPI.enableAppProtocol=true
+          - value: l2announcements.enabled=true
+          - value: k8sClientRateLimit.qps=10
+          - value: k8sClientRateLimit.burst=20
+          - value: securityContext.privileged=true
+          - value: operator.replicas=1
 
     - name: Verify Cilium CLI is working
       command: cilium-cli status --wait
+      register: cilium_test
+      changed_when: cilium_test.rc == 0
 
     - name: DNS test
       command: kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
-
-    # - name: Create namespace
-    #   command: kubectl create namespace cilium-test-1
-
-    # - name: Label namespace
-    #   command: kubectl label namespace cilium-test-1 pod-security.kubernetes.io/enforce=privileged
-
-    # - name: Cilium test
-    #   command: cilium-cli connectivity test
-
-    # - name: Remove namespace
-    #   command: kubectl delete namespace cilium-test-1
+      register: dns_test
+      changed_when: dns_test.rc == 0
 
     - name: Bootstrap Flux into Kubernetes
       command: >
@@ -120,5 +124,7 @@
         --branch="master"
         --path="clusters/production"
         --personal
+      register: flux_bootstrap
+      changed_when: flux_bootstrap.rc == 0
       environment:
         GITHUB_TOKEN: "{{ github_pat }}"

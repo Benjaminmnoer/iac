@@ -5,15 +5,15 @@ metadata:
   namespace: onedev
 spec:
   parentRefs:
-  - name: istari-gateway
-    namespace: cilium
+    - name: istari-gateway
+      namespace: kube-system
   hostnames:
-  - "onedev.istari.benjaminmnoer.dk"
+    - "onedev.istari.benjaminmnoer.dk"
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: onedev
-      port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: onedev
+          port: 80
