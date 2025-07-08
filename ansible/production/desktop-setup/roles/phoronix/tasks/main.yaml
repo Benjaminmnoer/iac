@@ -4,6 +4,7 @@
     package:
       - phoronix-test-suite
     state: present
+  become: true
 - name: phoronix install suites
   command: phoronix-test-suite install build-linux-kernel compress-7zip stockfish blender rocksdb unigine-heaven mbw vkpeak
 - name: Set the /PhoronixTestSuite/Options/BatchMode/RunAllTestCombinations=FALSE
