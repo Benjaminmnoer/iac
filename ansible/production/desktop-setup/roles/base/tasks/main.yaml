@@ -1,0 +1,57 @@
+---
+- name: Update packages
+  pacman:
+    update_cache: true
+    upgrade: true
+  become: true
+- name: Install base packages
+  pacman:
+    package:
+      - base-devel
+      - zip
+      - unzip
+      - amd-ucode
+      - qemu-guest-agent
+    state: present
+  become: true
+- name: Enable qemu guest agent
+  service:
+    name: qemu-guest-agent
+    state: running
+    enabled: true
+- name: Fuck chromium
+  pacman:
+    package:
+      - chromium
+    state: absent
+  become: true
+- name: Configure timezone
+  ansible.builtin.import_tasks: timezone.yaml
+- name: Set makeflags
+  lineinfile:
+    path: /etc/makepkg.conf
+    regexp: ^MAKEFLAGS=
+    line: MAKEFLAGS="-j16"
+  become: true
+- name: Remove plymouth hook
+  ansible.builtin.replace:
+    path: /etc/mkinitcpio.conf
+    regexp: '^(HOOKS=\(.*)\bplymouth\b(.*\))$'
+    replace: '\1\2'
+    backup: yes
+- name: mkinitcpi
+  command: mkinitcpio -p linux615
+  become: true
+- name: Remove splash
+  ansible.builtin.replace:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=\(.*)\bsplash\b(.*\))$'
+    replace: '\1\2'
+    backup: yes
+- name: Remove quiet
+  ansible.builtin.replace:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=\(.*)\bquiet\b(.*\))$'
+    replace: '\1\2'
+    backup: yes
+

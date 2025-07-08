@@ -1,0 +1,41 @@
+---
+- name: Install base packages
+  pacman:
+    package:
+      - gameconqueror
+      - gamemode
+      - lib32-gamemode
+      - lib32-mangohud
+      - lib32-nvidia-utils
+      - lib32-opencl-nvidia
+      - lib32-vulkan-icd-loader
+      - libvdpau
+      - libxnvctrl
+      - mangohud
+      - mesa-demos
+      - mesa-utils
+      - discord
+      - nvidia
+      - nvidia-settings
+      - nvidia-utils
+      - opencl-nvidia
+      - steam
+      - steam-native-runtime
+      - vkmark
+      - vulkan-icd-loader
+      - vulkan-tools
+    state: present
+  notify: Reboot
+  become: true
+- name: Install AUR packages
+  pacman:
+    executable: pamac
+    package:
+      - vkbasalt
+  become: true
+- name: Enable gamemode service
+  service:
+    name: gamemoded
+    state: running
+    enabled: true
+  become: true

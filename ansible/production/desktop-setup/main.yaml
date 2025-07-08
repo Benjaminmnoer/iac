@@ -1,0 +1,7 @@
+---
+- name: Set up desktops
+  hosts: localhost
+  roles:
+    - base
+    - dev
+    - gaming
