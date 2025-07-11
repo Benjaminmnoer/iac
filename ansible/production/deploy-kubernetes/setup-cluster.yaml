@@ -10,6 +10,7 @@
     hubble_version: "1.17.5"
     cluster_name: "Kirin Tor"
     flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
+    key_fp: "6B021152E518C20179D5558C51DE92958775C0C2"
 
   tasks:
     - name: Update system packages
@@ -29,25 +30,30 @@
           - jq
           - wget
           - cilium-cli
+          - python-kubernetes
         state: present
 
-    - name: Install hubble
+    - name: Download Hubble
       become: true
-      shell: |
-        HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
-        HUBBLE_ARCH=amd64
-        curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-        sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
-        sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
-        rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-      args:
-        creates: /usr/local/bin/hubble
+      get_url:
+        url: https://github.com/cilium/hubble/releases/download/v{{ hubble_version }}/hubble-linux-amd64.tar.gz
+        dest: /tmp/hubble-linux-amd64.tar.gz
+        mode: u=rwx,g=rx,o=rx
+        owner: root
+        group: root
+        checksum: sha256:https://github.com/cilium/hubble/releases/download/v{{ hubble_version }}/hubble-linux-amd64.tar.gz.sha256sum
+
+    - name: Install Hubble
+      become: true
+      unarchive:
+        src: /tmp/hubble-linux-amd64.tar.gz
+        dest: /usr/local/bin
 
     - name: Download talosctl checksums
       get_url:
         url: https://github.com/siderolabs/talos/releases/download/v{{ talos_version }}/sha256sum.txt
         dest: /tmp/talosctl-sha256sum.txt
-        mode: u=rw,g=r,o=r
+        mode: u=rwx,g=rx,o=rx
 
     - name: Install talosctl
       become: true
@@ -61,15 +67,6 @@
       vars:
         checksum: '{{ lookup("file", "/tmp/talosctl-sha256sum.txt").splitlines() | select("match", ".*talosctl-linux-amd64$") | list }}'
 
-    - name: Add Cilium Helm repository
-      kubernetes.core.helm_repository:
-        name: cilium
-        repo_url: https://helm.cilium.io
-        force_update: true
-
-    - name: Update Helm repositories
-      command: helm repo update
-
     - name: Install gateway CRDs
       command: kubectl apply -f "{{ item }}"
       loop:
@@ -79,6 +76,12 @@
         - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml"
         - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml"
         - "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml"
+
+    - name: Add Cilium Helm repository
+      kubernetes.core.helm_repository:
+        name: cilium
+        repo_url: https://helm.cilium.io
+        force_update: true
 
     - name: Install Cilium using Helm
       kubernetes.core.helm:
@@ -128,3 +131,13 @@
       changed_when: flux_bootstrap.rc == 0
       environment:
         GITHUB_TOKEN: "{{ github_pat }}"
+
+    - name: Add decryption key
+      shell: >
+        set -o pipefail &&
+        gpg --export-secret-keys --armor "{{ key_fp }}" |
+        kubectl create secret generic sops-gpg
+        --namespace=flux-system
+        --from-file=sops.asc=/dev/stdin
+      register: decryption_key
+      changed_when: decryption_key.rc == 0

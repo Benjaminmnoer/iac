@@ -15,9 +15,9 @@ terraform {
 
 provider "proxmox" {
   endpoint  = var.virtual_environment_endpoint
-  api_token = var.virtual_environment_api_token
-  # username  = var.virtual_environment_username
-  # password  = var.virtual_environment_password
+  # api_token = var.virtual_environment_api_token
+  username  = var.virtual_environment_username
+  password  = var.virtual_environment_password
 
   min_tls = 1.2
 

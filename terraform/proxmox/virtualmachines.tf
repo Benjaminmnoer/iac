@@ -63,10 +63,11 @@ resource "proxmox_virtual_environment_vm" "icecrown01" {
   tags        = ["terraform", "arch", "gaming", "manjaro"]
   node_name   = "northrend"
   on_boot     = false
-  started     = false
 
-  machine = "q35"
-  bios    = "ovmf"
+  machine       = "q35"
+  bios          = "ovmf"
+  boot_order    = ["scsi0"]
+  kvm_arguments = "-cpu 'host,host-cache-info=on,topoext=on,hv_ipi,hv_relaxed,hv_reset,hv_runtime,hv_spinlocks=0x1fff,hv_stimer,hv_synic,hv_time,hv_vapic,hv_vendor_id=0123756792CD,hv_vpindex,kvm=off,+kvm_pv_eoi,+kvm_pv_unhalt,+invtsc,hypervisor=off' -smp '16,sockets=1,cores=16,maxcpus=16'"
 
   efi_disk {
     datastore_id      = "fdata"
@@ -74,11 +75,10 @@ resource "proxmox_virtual_environment_vm" "icecrown01" {
     pre_enrolled_keys = true
   }
 
-  boot_order = ["ide2"]
-
   cpu {
-    cores = 16
-    type  = "host"
+    cores    = 16
+    type     = "host"
+    affinity = "0-16"
   }
 
   memory {
@@ -128,6 +128,26 @@ resource "proxmox_virtual_environment_vm" "icecrown01" {
     mapping = proxmox_virtual_environment_hardware_mapping_pci.frontpanel.name
     rombar  = true
   }
+
+  # hostpci {
+  #   device = "hostpci0"
+  #   id     = "0000:0b:00"
+  #   rombar = true
+  #   pcie   = true
+  #   xvga   = true
+  # }
+
+  # hostpci {
+  #   device = "hostpci1"
+  #   id     = "0000:08:00"
+  #   rombar = true
+  # }
+
+  # hostpci {
+  #   device = "hostpci2"
+  #   id     = "0000:0d:00.4"
+  #   rombar = true
+  # }
 }
 
 # resource "proxmox_virtual_environment_vm" "stormwind" {

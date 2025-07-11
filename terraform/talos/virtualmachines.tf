@@ -112,6 +112,7 @@ resource "proxmox_virtual_environment_vm" "khadgar" {
   cpu {
     cores = 8
     type  = "x86-64-v2-AES"
+    affinity = "16-23"
   }
 
   memory {
