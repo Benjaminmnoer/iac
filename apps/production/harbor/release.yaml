@@ -18,3 +18,5 @@ spec:
   values:
     expose:
       type: ClusterIP
+      tls:
+        enabled: false
