@@ -18,6 +18,7 @@ spec:
       retries: 3
   values:
     externalURL: "harbor.kirintor.benjaminmnoer.dk"
+    harborAdminPassword: ""
     existingSecretAdminPassword: harbor-credentials
     database:
       type: external
