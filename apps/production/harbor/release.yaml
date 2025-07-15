@@ -1,56 +1,59 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-    name: harbor
-    namespace: harbor
+  name: harbor
+  namespace: harbor
 spec:
-    releaseName: harbor
-    chart:
-        spec:
-            chart: harbor
-            sourceRef:
-                kind: HelmRepository
-                name: harbor
-    interval: 50m
-    install:
-        remediation:
-            retries: 3
-    values:
-        database:
-            type: external
-            external:
-                host: 192.168.2.5
-                port: "5432"
-                username: harbor_user
-                password: ENC[AES256_GCM,data:9QO6BwBqiWm30Vf6oY2JSV4Sb71g/T+kSuJV6NMPE7nB0ZGmP7JF0BZn8EWcl472vQCdsN9X3uGckNio8Mw+fw==,iv:+opGDZ/x0bC4VfxP7WBHftQAUdUTl8V91HCvU+qHqmg=,tag:52a2JQYZsmMipGwrDOsTGg==,type:str]
-                coreDatabase: harbor
-        expose:
-            type: ClusterIP
-            tls:
-                enabled: false
+  releaseName: harbor
+  chart:
+    spec:
+      chart: harbor
+      version: v1.17.1
+      sourceRef:
+        kind: HelmRepository
+        name: harbor
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    externalURL: "harbor.kirintor.benjaminmnoer.dk"
+    existingSecretAdminPassword: harbor-credentials
+    database:
+      type: external
+      external:
+        host: 192.168.2.5
+        port: "5432"
+        username: harbor_user
+        password: ENC[AES256_GCM,data:9QO6BwBqiWm30Vf6oY2JSV4Sb71g/T+kSuJV6NMPE7nB0ZGmP7JF0BZn8EWcl472vQCdsN9X3uGckNio8Mw+fw==,iv:+opGDZ/x0bC4VfxP7WBHftQAUdUTl8V91HCvU+qHqmg=,tag:52a2JQYZsmMipGwrDOsTGg==,type:str]
+        coreDatabase: harbor
+    expose:
+      type: ClusterIP
+      tls:
+        enabled: false
 sops:
-    lastmodified: "2025-07-15T09:16:48Z"
-    mac: ENC[AES256_GCM,data:iyw3HUBku8PlCK1qiM7U2aJ6GZPBPVcVAxThXxC5Q5tWG86Qye7mjfALzKbc/FO7Zov+xo1yoU02DRuhKFkyl3RBh4TZqpl/+7Rw9OMejmRS8OURPX1ih5pK5fCqs/mBcDWOOxPVbRolCn83gLB9SWRlSXcwbCejRPIqitm8D5M=,iv:9yMjlA/BaCMXsYOkxgfxUPVtPzCwDectuJgrDnUzwFc=,tag:4hscQ7mKsY1p4jcD5Vmy1w==,type:str]
-    pgp:
-        - created_at: "2025-07-15T09:16:48Z"
-          enc: |-
-            -----BEGIN PGP MESSAGE-----
+  lastmodified: "2025-07-15T09:16:48Z"
+  mac: ENC[AES256_GCM,data:iyw3HUBku8PlCK1qiM7U2aJ6GZPBPVcVAxThXxC5Q5tWG86Qye7mjfALzKbc/FO7Zov+xo1yoU02DRuhKFkyl3RBh4TZqpl/+7Rw9OMejmRS8OURPX1ih5pK5fCqs/mBcDWOOxPVbRolCn83gLB9SWRlSXcwbCejRPIqitm8D5M=,iv:9yMjlA/BaCMXsYOkxgfxUPVtPzCwDectuJgrDnUzwFc=,tag:4hscQ7mKsY1p4jcD5Vmy1w==,type:str]
+  pgp:
+    - created_at: "2025-07-15T09:16:48Z"
+      enc: |-
+        -----BEGIN PGP MESSAGE-----
 
-            hQIMAxPsHDHq87wsAQ//dCSGPfvnnM+u6oJ/uTSF9VusKeg7d4x8+uYa5mIFnC7l
-            NKEXfpQMfpg3ZIH3uhX79sBJs6OUjYjUap278D7LkxWjHfK7NpfOaga0Awbmb8mC
-            5wxUqVfWpelW+OfEmly7dMu/AR4GjdoHJnAXm6MDDii0p6Iejd7ydkzWd1DNNwli
-            U/zW/B+75mNmI2IzxTcv1G0eMOtx3wLFXf1o9gdFaQ2NnxKQYj2r9d12nBvkZs6c
-            h3mLmQIedAoZ7ffuGg3T2FPPZ8WQ66KWOUYizFfk9Z6rWxGcJcQ6t8lrG5hrsd23
-            yY+ZtnKV1lgzl/MeENi0L08x/L0XLiYM3Sb2K3DGVGQd60OkGP8UWGRG4aTw9im4
-            o5i5EVf3tZLmGAZ+ZNO3txcn/UrRMGkU4VYvYNPJnPEC1bFD+kVKQ6hlYSVuzIa5
-            hBtQ1crBrHEo625WIcPmHSUWD9GjqAQVzQkkXT0AQXdtlBXBloCvO/PPI6w4wvtd
-            aDpku69XemFTcEdk/4sk52y0gr0QwY734vAh+XqC8YmCxm3qAe5iQVMjptkKSg1k
-            YU7vXOyJUf6DIGGddzmyUBhTGxw6I8o7j41hCQ+bA17OEwHzG4nIGjhXyO6Ojp5K
-            W4HWja7tznCbuKtFMSUZzqec3lYZrujv0vt5WUW8sTUnpNyPrTvgDQzcbZ+iLFzS
-            XgHOLBWjxYT0Vk/upSsWCiCavHIiFBaiivRBITmx06lhuaikAXt6+UleOKToQ24T
-            zi7dvOC5r82fgCEz+6IeLVlJurUUaSuFafhbrBj3wD+8qvgm3/zs63UstN6NBCo=
-            =csnE
-            -----END PGP MESSAGE-----
-          fp: 6B021152E518C20179D5558C51DE92958775C0C2
-    encrypted_regex: ^(data|stringData|password|Password)$
-    version: 3.10.2
+        hQIMAxPsHDHq87wsAQ//dCSGPfvnnM+u6oJ/uTSF9VusKeg7d4x8+uYa5mIFnC7l
+        NKEXfpQMfpg3ZIH3uhX79sBJs6OUjYjUap278D7LkxWjHfK7NpfOaga0Awbmb8mC
+        5wxUqVfWpelW+OfEmly7dMu/AR4GjdoHJnAXm6MDDii0p6Iejd7ydkzWd1DNNwli
+        U/zW/B+75mNmI2IzxTcv1G0eMOtx3wLFXf1o9gdFaQ2NnxKQYj2r9d12nBvkZs6c
+        h3mLmQIedAoZ7ffuGg3T2FPPZ8WQ66KWOUYizFfk9Z6rWxGcJcQ6t8lrG5hrsd23
+        yY+ZtnKV1lgzl/MeENi0L08x/L0XLiYM3Sb2K3DGVGQd60OkGP8UWGRG4aTw9im4
+        o5i5EVf3tZLmGAZ+ZNO3txcn/UrRMGkU4VYvYNPJnPEC1bFD+kVKQ6hlYSVuzIa5
+        hBtQ1crBrHEo625WIcPmHSUWD9GjqAQVzQkkXT0AQXdtlBXBloCvO/PPI6w4wvtd
+        aDpku69XemFTcEdk/4sk52y0gr0QwY734vAh+XqC8YmCxm3qAe5iQVMjptkKSg1k
+        YU7vXOyJUf6DIGGddzmyUBhTGxw6I8o7j41hCQ+bA17OEwHzG4nIGjhXyO6Ojp5K
+        W4HWja7tznCbuKtFMSUZzqec3lYZrujv0vt5WUW8sTUnpNyPrTvgDQzcbZ+iLFzS
+        XgHOLBWjxYT0Vk/upSsWCiCavHIiFBaiivRBITmx06lhuaikAXt6+UleOKToQ24T
+        zi7dvOC5r82fgCEz+6IeLVlJurUUaSuFafhbrBj3wD+8qvgm3/zs63UstN6NBCo=
+        =csnE
+        -----END PGP MESSAGE-----
+      fp: 6B021152E518C20179D5558C51DE92958775C0C2
+  encrypted_regex: ^(data|stringData|password|Password)$
+  version: 3.10.2
