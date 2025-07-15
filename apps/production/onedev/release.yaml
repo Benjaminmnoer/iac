@@ -1,23 +1,58 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: onedev
-  namespace: onedev
+    name: onedev
+    namespace: onedev
 spec:
-  releaseName: onedev
-  chart:
-    spec:
-      chart: onedev
-      sourceRef:
-        kind: HelmRepository
-        name: onedev
-  interval: 50m
-  install:
-    remediation:
-      retries: 3
-  values:
-    persistence:
-      storageClassName: smb-storage-class
-      selector:
-        matchLabels:
-          app: onedev
+    releaseName: onedev
+    chart:
+        spec:
+            chart: onedev
+            sourceRef:
+                kind: HelmRepository
+                name: onedev
+    interval: 50m
+    install:
+        remediation:
+            retries: 3
+    values:
+        persistence:
+            storageClassName: smb-storage-class
+            selector:
+                matchLabels:
+                    app: onedev
+        database:
+            external: true
+            type: postgresql
+            host: 192.168.2.5
+            port: "5432"
+            name: onedev
+            user: onedev_user
+            password: ENC[AES256_GCM,data:mURCjuQD7W+SRR0UywDod5VsqVCMOva2y4UY0aoQJ5W/gqJqZmuY1ouFNqjWZA6ZOeAoZzjn783em5RDymGeyA==,iv:rmJr3o3GEDFgg1PFJZ2ej5VNvk3Q3hDvpJVsd5QoyE0=,tag:8TZGJY2oo5yehJfvKomy7g==,type:str]
+            maximumPoolSize: "25"
+sops:
+    lastmodified: "2025-07-15T08:32:58Z"
+    mac: ENC[AES256_GCM,data:JY0TkCjF+VRoC9G+C1zx2ehQsGeYD9P6Vj0PB66r3jdgkdH7JMld8wgGpxGn53zPPGKrdFsMz54eATCt9snjpPjMqEnOdaDo2O6XGef3u4OP6OABVjMPJa2/xmJOt36KH8/x9O3NkB0wCVFo/z0O717KUCqGhNunV0ISgIqR7QE=,iv:R65y4Byh8UNfPjo+d6QKooUBSFDdZ9lHNhAv2dop9us=,tag:KKqsPb+DgTgkS6cKkKwTKQ==,type:str]
+    pgp:
+        - created_at: "2025-07-15T08:32:58Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAxPsHDHq87wsAQ//YrNxpTPEhOxYCNjOwGVgHdNz2R1KI5LTL3DMVmNhC1uj
+            csX4hF1VA38/U4/UxV0zQZ2fXcolw6E2O4cWIvmo7fE1V2V2yb3X6akLvK44pYqq
+            Lvwo8Pja7ZXBbnfb9i2h64E/g7WXvEFRWvQ2u6jWHzOj5S3y84Rni9h/5XoS+4NZ
+            /2YMFzWn3+Q78xNeSK/yLH4K89cP6jj6cx6S+hgzpWShzXQEEyPTbKzZPTYHa9Wv
+            zxg70ippAKqv6PBNizeXE8r/SwzrBSVw+9GPUT4eYImE837ntA75SiEnStNDoGrA
+            fLCp2AmVDhf6x0+oK9XeCsVgel5AePmgJjEntJLFUont0bMLTJ4pZILuDPdb4teb
+            pe2ED0MDpWngonysgKkL31PS2EkGzlJv6X34w5z5GT+Kx4scTctLAboiAId+o6l6
+            ej7pBbeK6aqXpRQQ7HUtpS7CH14y1V97HcYHM4pmaP4H3GNpK9W/zNKLgpoAx251
+            QYrQEj6w2eqr4zAW2HKjhKTmXSFH6uDPBgL+2C/4XX4rpLcVA4zC1JvU+oJC8PJN
+            190Hw4rsXEkidcYgR7NGvom8IOKQX1qhpXvHra3IHVpMI9dCcUjuAYUB2RuOJM0f
+            IXyrPV8v+f6/AO2xUGzWO6HLk1kUoply20M0wO8OtD4T49e9VqB9js4u0Bz7IkLS
+            XgGCBxZAFVv2jZQGUrpcxr3ueOeTiOtZUshE67DqyquI1ae5XYDe2b7R4KaFFbxM
+            1y/Vn9NU6hBchsPK4PlF72fTxLY85Mpa90uwqLLDcH0znZAGAysa5J8Ihtbxdb0=
+            =eCJr
+            -----END PGP MESSAGE-----
+          fp: 6B021152E518C20179D5558C51DE92958775C0C2
+    encrypted_regex: ^(data|stringData|password)$
+    version: 3.10.2
