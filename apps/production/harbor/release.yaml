@@ -17,44 +17,43 @@ spec:
     remediation:
       retries: 3
   values:
-    externalURL: "harbor.kirintor.benjaminmnoer.dk"
-    harborAdminPassword: ""
-    existingSecretAdminPassword: harbor-credentials
+    externalURL: harbor.kirintor.benjaminmnoer.dk
+    harborAdminPassword: ENC[AES256_GCM,data:kUOW0FYvchZAuHO7YL9BT1es057YnH3sSryWW8EssL4Jw/Sgnw5j/QFNgbZ2+kXV1ZXcRZS5oQPRK3v9wGZQMQ==,iv:gM3IDN/ja+mcUIsL9iwFFS7SPRrwwZcc+z+OQzXJc/w=,tag:Dx4wpO5d4o23aquPzDD3sA==,type:str]
     database:
       type: external
       external:
         host: 192.168.2.5
         port: "5432"
         username: harbor_user
-        password: ENC[AES256_GCM,data:9QO6BwBqiWm30Vf6oY2JSV4Sb71g/T+kSuJV6NMPE7nB0ZGmP7JF0BZn8EWcl472vQCdsN9X3uGckNio8Mw+fw==,iv:+opGDZ/x0bC4VfxP7WBHftQAUdUTl8V91HCvU+qHqmg=,tag:52a2JQYZsmMipGwrDOsTGg==,type:str]
+        password: ENC[AES256_GCM,data:LFrM7HGw2qrtSwFfd/g4/qo3oUVHhEenWWZYhvZR7b0vdrawvIBqD+zOcrrDZ4sfwWWAsXDJlIojuqta8IO4Iw==,iv:KBJs5mwkYDL6O+E430TkvThKPzPonTcxsp9iNLQSFrw=,tag:JGyz1lpVWMQNpbSbMKB+6Q==,type:str]
         coreDatabase: harbor
     expose:
       type: ClusterIP
       tls:
         enabled: false
 sops:
-  lastmodified: "2025-07-15T09:16:48Z"
-  mac: ENC[AES256_GCM,data:iyw3HUBku8PlCK1qiM7U2aJ6GZPBPVcVAxThXxC5Q5tWG86Qye7mjfALzKbc/FO7Zov+xo1yoU02DRuhKFkyl3RBh4TZqpl/+7Rw9OMejmRS8OURPX1ih5pK5fCqs/mBcDWOOxPVbRolCn83gLB9SWRlSXcwbCejRPIqitm8D5M=,iv:9yMjlA/BaCMXsYOkxgfxUPVtPzCwDectuJgrDnUzwFc=,tag:4hscQ7mKsY1p4jcD5Vmy1w==,type:str]
+  lastmodified: "2025-07-16T08:30:10Z"
+  mac: ENC[AES256_GCM,data:ZNeg/X5w4KCyUpNqGbqH7vsEYLlpzHhhwwGPUTl9EI8ArA4tFO5PXLyVbcq91Wbqb7OtoKq1kp3EUVlY+6J1CvGQvY8/QwX6vn7r0wV3/a6BbXwHa6AGAi4Ny1r4fj0U0bL0TBJcVDIt30gbgtxIGxgxsVGsOoSnKnknP2rXg10=,iv:NwDqsfMIw26PivknQdu5iutArRynZAiNdk0YAR4r9s0=,tag:U+1jbwQ79nsfZ6x27fgxyw==,type:str]
   pgp:
-    - created_at: "2025-07-15T09:16:48Z"
+    - created_at: "2025-07-16T08:30:10Z"
       enc: |-
         -----BEGIN PGP MESSAGE-----
 
-        hQIMAxPsHDHq87wsAQ//dCSGPfvnnM+u6oJ/uTSF9VusKeg7d4x8+uYa5mIFnC7l
-        NKEXfpQMfpg3ZIH3uhX79sBJs6OUjYjUap278D7LkxWjHfK7NpfOaga0Awbmb8mC
-        5wxUqVfWpelW+OfEmly7dMu/AR4GjdoHJnAXm6MDDii0p6Iejd7ydkzWd1DNNwli
-        U/zW/B+75mNmI2IzxTcv1G0eMOtx3wLFXf1o9gdFaQ2NnxKQYj2r9d12nBvkZs6c
-        h3mLmQIedAoZ7ffuGg3T2FPPZ8WQ66KWOUYizFfk9Z6rWxGcJcQ6t8lrG5hrsd23
-        yY+ZtnKV1lgzl/MeENi0L08x/L0XLiYM3Sb2K3DGVGQd60OkGP8UWGRG4aTw9im4
-        o5i5EVf3tZLmGAZ+ZNO3txcn/UrRMGkU4VYvYNPJnPEC1bFD+kVKQ6hlYSVuzIa5
-        hBtQ1crBrHEo625WIcPmHSUWD9GjqAQVzQkkXT0AQXdtlBXBloCvO/PPI6w4wvtd
-        aDpku69XemFTcEdk/4sk52y0gr0QwY734vAh+XqC8YmCxm3qAe5iQVMjptkKSg1k
-        YU7vXOyJUf6DIGGddzmyUBhTGxw6I8o7j41hCQ+bA17OEwHzG4nIGjhXyO6Ojp5K
-        W4HWja7tznCbuKtFMSUZzqec3lYZrujv0vt5WUW8sTUnpNyPrTvgDQzcbZ+iLFzS
-        XgHOLBWjxYT0Vk/upSsWCiCavHIiFBaiivRBITmx06lhuaikAXt6+UleOKToQ24T
-        zi7dvOC5r82fgCEz+6IeLVlJurUUaSuFafhbrBj3wD+8qvgm3/zs63UstN6NBCo=
-        =csnE
+        hQIMAxPsHDHq87wsARAAi0riP+h+ajYeUJOPCs8hNf+Up6o2Lde2VXZPcRTYQF6v
+        50GEMV9e9q/TKUygIDVjOqfXFUfXkpMjTAa5lfrhhNtshlut/EqOlnxpJt5UzUDQ
+        mG7cdQGIl2d2p76gGIZ0jHbPG7+Hb1jP275ZJy25qLGlEFGYEgWObHycv0YerUAy
+        MXd9KakhodbcORJUWgXFDKeP1R/efEHP4VfhMxrEkrd4i8mAUsFg5vIoGzDsVYY5
+        V5YUcoz6h5ZVZwDuBDULCs7YUNGiPJH1wiI8zG7Febbl8A361uDdr5MYbpNCvbvt
+        zvCRGh2Mk4w/EOsH7OzjnQcs7dXRN2+9Ybnoxar4lFRSUJV+YQG0FJlQf/C3e+76
+        AMeOs3tEFCK5VN/AkRx8q4lXxZUPzJHhiHBJ4ZXPyHmmU1DA8z609CzYi7YM03Vg
+        KWcS3myqRz943o4+jRR3XHokxV5U+z/Skx0cxRECEMZFK2RohoUrzF+syjPYOWS+
+        p19uBgk58SAczFrt7Zs/fzV5DCzXx8INtGjSV87i/bl6lhAxIA8HOEADG+Xe1As0
+        UQ1LUIaG321/h1jF2a5NuRtJThWUp7LQJPzFc4axUDx8+PPhxbS8Clsz7fUJhpjt
+        cWJKRAuigD+76iGHcAuar7GhBLjM67ZnbkEPgaTtH+gzF/47Fnrbie1mmBWXTD3S
+        XgEq7ywUzCcVJ8cDiu+pwdcpB2SJmZY/LjQ2re2swIguHDZxfjLKJgFZ2k12XTrO
+        J3nNe4qdGJrXAvCgdYOYVAJN66Eqtcb36iObA7bGxk88ioqWsuiosyqcR7xS8Hw=
+        =9zmc
         -----END PGP MESSAGE-----
       fp: 6B021152E518C20179D5558C51DE92958775C0C2
-  encrypted_regex: ^(data|stringData|password|Password)$
+  encrypted_regex: ^(harborAdminPassword|password)$
   version: 3.10.2
