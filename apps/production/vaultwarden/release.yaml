@@ -16,8 +16,9 @@ spec:
     remediation:
       retries: 3
   values:
+    domain: "https://vault.kirintor.benjaminmnoer.dk"
     image:
-      registry: harbor.kirintor.benjaminmnoer.dk
+      registry: harbor.kirintor.benjaminmnoer.dk/vaultwarden
       pullSecrets:
         - name: harbor-secret
     service:
