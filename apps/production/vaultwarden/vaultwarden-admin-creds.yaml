@@ -1,0 +1,34 @@
+apiVersion: v1
+stringData:
+    adminToken: ENC[AES256_GCM,data:7roElxyrbbI4/oM4cQVKsjgx0ozOVIZLxRyxCqm613NdM9n8Ajg/dkUFR8CxsQBjT0EqlvaRL+vXrbZRI7E0YQ==,iv:u2EPWBDDXChdRjpGJkb8M0f/qNgc4DOjJb1YT6KZY7I=,tag:blcAGoITdTII6Cu5bm+AuQ==,type:str]
+kind: Secret
+metadata:
+    name: vaultwarden-admin-creds
+    namespace: vaultwarden
+type: Opaque
+sops:
+    lastmodified: "2025-07-21T13:57:15Z"
+    mac: ENC[AES256_GCM,data:1rJgTYureTNm+EHvf5jLbwa1FhvmAiRC5afLxTzqNsyBGXn4IhKbddK1uKsU7tqLSnvyXJGsCrfettuJCe9yLy7jVVtb/jVuZfVdv3A9fF8b7bF9K5qTOmAKDDs2mi4md13FsGpHekY8m+Fn2h8e/b0VnteE28R8Px2Dpat0cfA=,iv:oOlAmAREIezIQiECbEYhvChY+iXITGH3SJRBTyd8Wt0=,tag:1aDp3aSJ+5dfikTC/zrmAw==,type:str]
+    pgp:
+        - created_at: "2025-07-21T13:57:14Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAxPsHDHq87wsAQ//XPefA1hG25aWcfHGp2G6JOa1GqZu3JbDPUD6IK7FuMXY
+            Ayd/L+bqUK62sPqUD017bQw0NvaEIIymds/Fdn/83drY24Kd/dBJPPBk4CuH0z3w
+            5e9vRMUmDykL0g/JFEqhQLld0H46DQh0jGBfCpwKwTAzPHq/E6RZ7JsmI1c+5oNa
+            HiQ4p5sfsN76JkOZAaEDZn1JQI0hIhoOkOvUR0kA1gw6Ao3nvbyQ/VRnaOh7E91N
+            rEc/WpPPbc0yS3zfOKS578GxPMWNRJ4AhCouI8967vNhxnhy5kiA4X98DRxXbiXv
+            OUwZzr5eNzS0rILCqHkkX3Cdh4wyYkQHE55YkkvwA6JkkfnGcy2s7UHaMS70CvRr
+            KOjMP76IDC0kA1Jw1ztRv3FzYhzzYZWYasHsKM0FjuOcVN9iIuFS6lqDdGpcFtIi
+            3EddQZ1zTa5r5ygk09ltrsyfcf5JQzFnlg1PlN8Ed0/x3M94hFkcmu8YG5UC0S96
+            lx1zXGRmePUjZsuy4VxxN7CvIq+bXwJu7A0t5EGcFmZiC5Kq8r62q/VFMwrZslJv
+            QgeCwrFB8pZl/v1I1AsZhOVDy/gETL7zA9IzjSheVboO33XTaXWaEDSShfmze7cw
+            qk9V0nTUK9JZyUaU6wJHcaefoVEuUeuMGFZ551GJ7/wohA0Aw6DSbCYZbFUaUv3S
+            XAFQX+V1qSTXT1B2bbv4a3jzWLpqPKPbmqqThjfqEx4xde8UQodOdYetO8LVVyWw
+            9qCNwsGwroQw2WoJItgAZNCjGs7R7C8TDCH4RYxww2zPhO+iOZ0TbsOYTvbJ
+            =RWJm
+            -----END PGP MESSAGE-----
+          fp: 6B021152E518C20179D5558C51DE92958775C0C2
+    encrypted_regex: ^(stringData)$
+    version: 3.10.2
