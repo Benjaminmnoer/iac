@@ -30,3 +30,6 @@ spec:
         existingSecret: harbor-postgres-secret
     expose:
       type: ClusterIP
+      tls:
+        auto:
+          commonName: "*.harbor.svc.cluster.local"
