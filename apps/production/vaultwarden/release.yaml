@@ -19,7 +19,7 @@ spec:
     image:
       registry: harbor.kirintor.benjaminmnoer.dk
       pullsecrets:
-        - harbor-secret 
+        - name: harbor-secret
     service:
       type: ClusterIP
     database:
