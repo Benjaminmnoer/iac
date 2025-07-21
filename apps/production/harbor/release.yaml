@@ -18,42 +18,15 @@ spec:
       retries: 3
   values:
     externalURL: harbor.kirintor.benjaminmnoer.dk
-    harborAdminPassword: ENC[AES256_GCM,data:kUOW0FYvchZAuHO7YL9BT1es057YnH3sSryWW8EssL4Jw/Sgnw5j/QFNgbZ2+kXV1ZXcRZS5oQPRK3v9wGZQMQ==,iv:gM3IDN/ja+mcUIsL9iwFFS7SPRrwwZcc+z+OQzXJc/w=,tag:Dx4wpO5d4o23aquPzDD3sA==,type:str]
+    existingSecretAdminPassword: harbor-admin-secret
+    existingSecretAdminPasswordKey: admin-password
     database:
       type: external
       external:
         host: 192.168.2.5
         port: "5432"
         username: harbor_user
-        password: ENC[AES256_GCM,data:LFrM7HGw2qrtSwFfd/g4/qo3oUVHhEenWWZYhvZR7b0vdrawvIBqD+zOcrrDZ4sfwWWAsXDJlIojuqta8IO4Iw==,iv:KBJs5mwkYDL6O+E430TkvThKPzPonTcxsp9iNLQSFrw=,tag:JGyz1lpVWMQNpbSbMKB+6Q==,type:str]
         coreDatabase: harbor
+        existingSecret: harbor-postgres-secret
     expose:
       type: ClusterIP
-      tls:
-        enabled: false
-sops:
-  lastmodified: "2025-07-16T08:30:10Z"
-  mac: ENC[AES256_GCM,data:ZNeg/X5w4KCyUpNqGbqH7vsEYLlpzHhhwwGPUTl9EI8ArA4tFO5PXLyVbcq91Wbqb7OtoKq1kp3EUVlY+6J1CvGQvY8/QwX6vn7r0wV3/a6BbXwHa6AGAi4Ny1r4fj0U0bL0TBJcVDIt30gbgtxIGxgxsVGsOoSnKnknP2rXg10=,iv:NwDqsfMIw26PivknQdu5iutArRynZAiNdk0YAR4r9s0=,tag:U+1jbwQ79nsfZ6x27fgxyw==,type:str]
-  pgp:
-    - created_at: "2025-07-16T08:30:10Z"
-      enc: |-
-        -----BEGIN PGP MESSAGE-----
-
-        hQIMAxPsHDHq87wsARAAi0riP+h+ajYeUJOPCs8hNf+Up6o2Lde2VXZPcRTYQF6v
-        50GEMV9e9q/TKUygIDVjOqfXFUfXkpMjTAa5lfrhhNtshlut/EqOlnxpJt5UzUDQ
-        mG7cdQGIl2d2p76gGIZ0jHbPG7+Hb1jP275ZJy25qLGlEFGYEgWObHycv0YerUAy
-        MXd9KakhodbcORJUWgXFDKeP1R/efEHP4VfhMxrEkrd4i8mAUsFg5vIoGzDsVYY5
-        V5YUcoz6h5ZVZwDuBDULCs7YUNGiPJH1wiI8zG7Febbl8A361uDdr5MYbpNCvbvt
-        zvCRGh2Mk4w/EOsH7OzjnQcs7dXRN2+9Ybnoxar4lFRSUJV+YQG0FJlQf/C3e+76
-        AMeOs3tEFCK5VN/AkRx8q4lXxZUPzJHhiHBJ4ZXPyHmmU1DA8z609CzYi7YM03Vg
-        KWcS3myqRz943o4+jRR3XHokxV5U+z/Skx0cxRECEMZFK2RohoUrzF+syjPYOWS+
-        p19uBgk58SAczFrt7Zs/fzV5DCzXx8INtGjSV87i/bl6lhAxIA8HOEADG+Xe1As0
-        UQ1LUIaG321/h1jF2a5NuRtJThWUp7LQJPzFc4axUDx8+PPhxbS8Clsz7fUJhpjt
-        cWJKRAuigD+76iGHcAuar7GhBLjM67ZnbkEPgaTtH+gzF/47Fnrbie1mmBWXTD3S
-        XgEq7ywUzCcVJ8cDiu+pwdcpB2SJmZY/LjQ2re2swIguHDZxfjLKJgFZ2k12XTrO
-        J3nNe4qdGJrXAvCgdYOYVAJN66Eqtcb36iObA7bGxk88ioqWsuiosyqcR7xS8Hw=
-        =9zmc
-        -----END PGP MESSAGE-----
-      fp: 6B021152E518C20179D5558C51DE92958775C0C2
-  encrypted_regex: ^(harborAdminPassword|password)$
-  version: 3.10.2
