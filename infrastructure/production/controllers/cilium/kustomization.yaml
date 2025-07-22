@@ -4,3 +4,4 @@ resources:
   - ip-pool.yaml
   - announcement-policy.yaml
   - gateway.yaml
+  - redirect-httproute.yaml
