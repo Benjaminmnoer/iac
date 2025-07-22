@@ -6,6 +6,7 @@ metadata:
 spec:
   parentRefs:
   - name: kirintor-gateway
+    sectionName: https
     namespace: kube-system
   hostnames:
   - "podinfo.kirintor.benjaminmnoer.dk"
