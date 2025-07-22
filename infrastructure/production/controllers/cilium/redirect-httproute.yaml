@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: http-filter-redirect
+  namespace: kube-system
+spec:
+  parentRefs:
+  - name: kirintor-gateway
+    sectionName: http
+  hostnames:
+  - "*.kirintor.benjaminmnoer.dk"
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
