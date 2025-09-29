@@ -43,7 +43,7 @@ resource "proxmox_virtual_environment_vm" "stormwind" {
   }
  
   agent {
-    enabled = false
+    enabled = true
   }
 
   network_device {
