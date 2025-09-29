@@ -19,7 +19,7 @@ resource "proxmox_virtual_environment_vm" "stormwind" {
   }
 
   bios = "ovmf"
-  boot_order = ["ide2","scsi0"]
+  boot_order = ["scsi0"]
   machine = "q35"
 
   cdrom {
@@ -60,5 +60,26 @@ resource "proxmox_virtual_environment_vm" "stormwind" {
 
   operating_system {
     type = "l26"
+  }
+
+  hostpci {
+    device = "hostpci0"
+    id     = "0000:01:00"
+    rombar = true
+    pcie   = true
+  }
+
+  hostpci {
+    device = "hostpci1"
+    id     = "0000:02:00"
+    rombar = true
+    pcie   = true
+  }
+
+  hostpci {
+    device = "hostpci2"
+    id     = "0000:03:00"
+    rombar = true
+    pcie   = true
   }
 }
