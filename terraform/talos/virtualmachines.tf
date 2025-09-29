@@ -1,6 +1,6 @@
 resource "proxmox_virtual_environment_download_file" "talos_amd64_img" {
   content_type = "iso"
-  datastore_id = "unraid-isos"
+  datastore_id = "local"
   file_name    = "talos-${var.talos_version}-nocloud-amd64.iso"
   node_name    = "azeroth"
   url          = "https://factory.talos.dev/image/${var.talos_img_schematic}/${var.talos_version}/nocloud-amd64.iso"
