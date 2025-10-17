@@ -17,7 +17,7 @@
       group: "{{ item.group }}"
       shell: "{{ item.shell }}"
       create_home: yes
-  - name: Create a directory if it does not exist
+  - name: Create an ssh directory if it does not exist
     ansible.builtin.file:
       path: "/home/{{ item.username }}/.ssh"
       state: directory
@@ -33,4 +33,8 @@
       path: /etc/ssh/sshd_config
       line: AllowUsers {{ item.username }}
       validate: sshd -t -f %s
+  - name: Restart SSH service
+    ansible.builtin.service:
+      name: sshd
+      state: restarted
   become: true

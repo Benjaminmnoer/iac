@@ -4,9 +4,11 @@
     name: pve-ha-lrm
     state: stopped
     enabled: false
+  become: true
 
 - name: Disable pve-ha-crm
   ansible.builtin.systemd_service:
     name: pve-ha-crm
     state: stopped
     enabled: false
+  become: true

@@ -1,0 +1,14 @@
+---
+- name: Install intel microcode
+  ansible.builtin.apt:
+    name: intel-microcode
+    state: present
+  when: cpu == "intel"
+  become: true
+
+- name: Install amd microcode
+  ansible.builtin.apt:
+    name: amd64-microcode
+    state: present
+  when: cpu == "amd"
+  become: true

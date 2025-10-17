@@ -2,6 +2,9 @@
 - name: Update apt sources
   ansible.builtin.import_tasks: update-apt-sources.yaml
 
+- name: Install firmware
+  ansible.builtin.import_tasks: install-firmware.yaml
+
 - name: Disabling subscription nag
   ansible.builtin.import_tasks: disable-subscription-nag.yaml
 
