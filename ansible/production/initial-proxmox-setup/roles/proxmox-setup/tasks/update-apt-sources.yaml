@@ -48,6 +48,19 @@
     mode: u=rw,g=r,o=r
   become: true
 
+- name: Disable enterprise repository
+  ansible.builtin.copy:
+    content: |
+      Types: deb
+      URIs: https://enterprise.proxmox.com/debian/pve
+      Suites: trixie
+      Components: pve-enterprise
+      Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+      Enabled: false
+    dest: /etc/apt/sources.list.d/pve-enterprise.sources
+    mode: u=rw,g=r,o=r
+  become: true
+
 - name: Disable non free firmware warning
   ansible.builtin.copy:
     content: APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";
@@ -55,7 +68,8 @@
     mode: u=rw,g=r,o=r
   become: true
 
-- name: Update package repositories
+- name: Update package repositories and perform dist-upgrade
   ansible.builtin.apt:
     update_cache: true
+    upgrade: dist
   become: true

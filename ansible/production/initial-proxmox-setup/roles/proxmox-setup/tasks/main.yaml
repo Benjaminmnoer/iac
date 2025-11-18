@@ -1,21 +1,16 @@
 ---
+- name: Setup network interfaces
+  ansible.builtin.import_tasks: setup-interfaces.yaml
+
 - name: Update apt sources
   ansible.builtin.import_tasks: update-apt-sources.yaml
 
 - name: Install firmware
   ansible.builtin.import_tasks: install-firmware.yaml
 
-- name: Disabling subscription nag
-  ansible.builtin.import_tasks: disable-subscription-nag.yaml
-
 - name: Disable HA
   ansible.builtin.import_tasks: disable-ha.yaml
-
-- name: Install dark theme
-  ansible.builtin.import_tasks: install-darktheme.yaml
-
-- name: Set hosts file
-  ansible.builtin.import_tasks: set-hosts.yaml
+  when: disable_ha is defined and disable_ha
 
 - name: Setup sudo
   ansible.builtin.import_tasks: setup-sudo.yaml
@@ -23,6 +18,15 @@
 - name: Setup ssh
   ansible.builtin.import_tasks: setup-ssh.yaml
 
-- name: Configure users
+- name: Configure local users
   include_tasks: configure-users.yaml
   loop: "{{users}}"
+
+# - name: Create terraform pve user
+#   ansible.builtin.import_tasks: create-terraform-user.yaml
+
+- name: Install dark theme
+  ansible.builtin.import_tasks: install-darktheme.yaml
+
+- name: Disabling subscription nag
+  ansible.builtin.import_tasks: disable-subscription-nag.yaml

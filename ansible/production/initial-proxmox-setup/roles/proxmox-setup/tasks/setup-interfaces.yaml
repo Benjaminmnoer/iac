@@ -1,0 +1,16 @@
+---
+- name: Install ethtool
+  ansible.builtin.apt:
+    name: ethtool
+    state: present
+  become: true
+
+- name: Copy interfaces to test file
+  copy:
+    content: "{{ interfaces }}"
+    dest: /etc/network/interfaces
+    backup: yes
+    owner: root
+    group: root
+    mode: '0644'
+  become: true

@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name: zsh
     state: present
+  become: true
 
 - name: Configure users
   block:
