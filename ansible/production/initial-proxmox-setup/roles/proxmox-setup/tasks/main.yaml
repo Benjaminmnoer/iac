@@ -8,6 +8,9 @@
 - name: Install firmware
   ansible.builtin.import_tasks: install-firmware.yaml
 
+- name: Log to ram
+  ansible.builtin.import_tasks: log-to-ram.yaml
+
 - name: Disable HA
   ansible.builtin.import_tasks: disable-ha.yaml
   when: disable_ha is defined and disable_ha
