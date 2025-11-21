@@ -45,3 +45,13 @@ variable "smb_clients" {
     comment = string
   }))
 }
+
+#################### Lorekeeper ####################
+variable "lorekeeper_ip" {
+  type = string
+}
+
+#################### Cosmos ####################
+variable "cosmos_ip" {
+  type = string
+}

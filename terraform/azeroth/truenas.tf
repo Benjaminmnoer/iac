@@ -21,11 +21,6 @@ resource "proxmox_virtual_environment_vm" "stormwind" {
   boot_order = ["scsi0"]
   machine    = "q35"
 
-  cdrom {
-    file_id   = proxmox_virtual_environment_download_file.truenas-iso.id
-    interface = "ide2"
-  }
-
   efi_disk {
     datastore_id      = "local-zfs"
     type              = "4m"
