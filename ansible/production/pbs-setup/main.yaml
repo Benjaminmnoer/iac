@@ -1,0 +1,135 @@
+- name: Setup PBS
+  hosts: pbs
+  tasks:
+  - name: Set debian apt sources
+    ansible.builtin.copy:
+      content: |
+        Types: deb
+        URIs: http://deb.debian.org/debian
+        Suites: trixie
+        Components: main contrib
+        Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+        Types: deb
+        URIs: http://security.debian.org/debian-security
+        Suites: trixie-security
+        Components: main contrib
+        Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+        Types: deb
+        URIs: http://deb.debian.org/debian
+        Suites: trixie-updates
+        Components: main contrib
+        Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+      dest: /etc/apt/sources.list.d/debian.sources
+      mode: u=rw,g=r,o=r
+    become: true
+
+  - name: Add pbs-no-subscription repository
+    ansible.builtin.copy:
+      content: |
+        Types: deb
+        URIs: http://download.proxmox.com/debian/pbs
+        Suites: trixie
+        Components: pbs-no-subscription
+        Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+      dest: /etc/apt/sources.list.d/pbs-no-subscription.sources
+      mode: u=rw,g=r,o=r
+    become: true
+
+  - name: Disable enterprise repository
+    ansible.builtin.copy:
+      content: |
+        Types: deb
+        URIs: https://enterprise.proxmox.com/debian/pbs
+        Suites: trixie
+        Components: pbs-enterprise
+        Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+        Enabled: false
+      dest: /etc/apt/sources.list.d/pbs-enterprise.sources
+      mode: u=rw,g=r,o=r
+    become: true
+
+  - name: Adding disable nag post invoke
+    ansible.builtin.copy:
+      content: |
+        #!/bin/sh
+        WEB_JS=/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+        if [ -s "$WEB_JS" ] && ! grep -q NoMoreNagging "$WEB_JS"; then
+            echo "Patching Web UI nag..."
+            sed -i -e "/data\.status/ s/!//" -e "/data\.status/ s/active/NoMoreNagging/" "$WEB_JS"
+        fi
+
+        MOBILE_TPL=/usr/share/pve-yew-mobile-gui/index.html.tpl
+        MARKER="<!-- MANAGED BLOCK FOR MOBILE NAG -->"
+        if [ -f "$MOBILE_TPL" ] && ! grep -q "$MARKER" "$MOBILE_TPL"; then
+            echo "Patching Mobile UI nag..."
+            printf "%s\n" \
+              "$MARKER" \
+              "<script>" \
+              "  function removeSubscriptionElements() {" \
+              "    // --- Remove subscription dialogs ---" \
+              "    const dialogs = document.querySelectorAll('dialog.pwt-outer-dialog');" \
+              "    dialogs.forEach(dialog => {" \
+              "      const text = (dialog.textContent || '').toLowerCase();" \
+              "      if (text.includes('subscription')) {" \
+              "        dialog.remove();" \
+              "        console.log('Removed subscription dialog');" \
+              "      }" \
+              "    });" \
+              "" \
+              "    // --- Remove subscription cards, but keep Reboot/Shutdown/Console ---" \
+              "    const cards = document.querySelectorAll('.pwt-card.pwt-p-2.pwt-d-flex.pwt-interactive.pwt-justify-content-center');" \
+              "    cards.forEach(card => {" \
+              "      const text = (card.textContent || '').toLowerCase();" \
+              "      const hasButton = card.querySelector('button');" \
+              "      if (!hasButton && text.includes('subscription')) {" \
+              "        card.remove();" \
+              "        console.log('Removed subscription card');" \
+              "      }" \
+              "    });" \
+              "  }" \
+              "" \
+              "  const observer = new MutationObserver(removeSubscriptionElements);" \
+              "  observer.observe(document.body, { childList: true, subtree: true });" \
+              "  removeSubscriptionElements();" \
+              "  setInterval(removeSubscriptionElements, 300);" \
+              "  setTimeout(() => {observer.disconnect();}, 10000);" \
+              "</script>" \
+              "" >> "$MOBILE_TPL"
+        fi
+      dest: /usr/local/bin/pve-remove-nag.sh
+      mode: u=rwx,g=rx,o=rx
+    become: true
+
+  - name: Add no nag script
+    ansible.builtin.copy:
+      content: |
+        DPkg::Post-Invoke { "/usr/local/bin/pve-remove-nag.sh"; };
+      dest: /etc/apt/apt.conf.d/no-nag-script
+      mode: u=rx,g=r,o=r
+    become: true
+
+  - name: Reinstall proxmox-widget-toolkit
+    ansible.builtin.command: apt --reinstall install proxmox-widget-toolkit
+    become: true
+  
+  - name: Reinstall proxmox-widget-toolkit
+    command: apt --reinstall install proxmox-widget-toolkit
+
+  - name: Update package repositories and perform dist-upgrade
+    ansible.builtin.apt:
+      update_cache: true
+      upgrade: dist
+    become: true
+
+  - name: Disable SSH password auth
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "^#?PasswordAuthentication"
+      line: "PasswordAuthentication no"
+      validate: sshd -t -f %s
+    become: true
+
+  - name: Reboot
+    reboot:

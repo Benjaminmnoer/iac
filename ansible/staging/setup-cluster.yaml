@@ -67,17 +67,17 @@
       vars:
         checksum: '{{ lookup("file", "/tmp/talosctl-sha256sum.txt").splitlines() | select("match", ".*talosctl-linux-amd64$") | list }}'
 
-    - name: Create Talos cluster without a default CNI
-      command: >
-        talosctl cluster create
-        --name {{ cluster_name }}
-        --kubernetes-version {{ kubernetes_version }}
-        --config-patch @talos-patch.yaml
-        --skip-k8s-node-readiness-check
-        --controlplanes=1
-        --workers=3
-      register: talos_cluster
-      changed_when: talos_cluster.rc == 0
+    # - name: Create Talos cluster without a default CNI
+    #   command: >
+    #     talosctl cluster create
+    #     --name {{ cluster_name }}
+    #     --kubernetes-version {{ kubernetes_version }}
+    #     --config-patch @talos-patch.yaml
+    #     --skip-k8s-node-readiness-check
+    #     --controlplanes=1
+    #     --workers=3
+    #   register: talos_cluster
+    #   changed_when: talos_cluster.rc == 0
 
     # - name: Create cilium namespace
     #   kubernetes.core.k8s:

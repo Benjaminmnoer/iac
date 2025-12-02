@@ -1,0 +1,22 @@
+---
+- name: Debug commands
+  debug:
+    msg: qm shutdown "{{ item }}"
+    verbosity: 1
+
+- name: Check VM statuses before shutting down
+  command: qm status "{{ item }}"
+  register: vm_status
+  become: true
+  change_when: false
+
+- name: Shutdown VM
+  command: qm shutdown "{{ item }}"
+  register: shutdown_result
+  become: true
+  when: vm_status.stdout is search("running")
+
+- name: Show VM shutdown results
+  debug:
+    var: shutdown_result
+  change_when: false

@@ -15,23 +15,39 @@
     - name: Wait for public key to be updated
       ansible.builtin.pause: 
         prompt: Update public git key and press enter
-    - name: Disable landlock for pacman
-      lineinfile:
-        path: /etc/pacman.conf
-        regexp: ^#DisableSandbox
-        line: DisableSandbox
+    # - name: Disable landlock for pacman
+    #   lineinfile:
+    #     path: /etc/pacman.conf
+    #     regexp: ^#DisableSandbox
+    #     line: DisableSandbox
     - name: Update system packages
-      pacman:
+      apt:
         update_cache: true
         upgrade: true
+    # - name: Install gpg
+    #   apt:
+    #     name:
+    #       - gnupg2
+    #     state: present
+    # - name: Add tailscale apt key
+    #   ansible.builtin.apt_key:
+    #     url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+    #     state: present
+    #     file: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    # - name: Add tailscale repository
+    #   ansible.builtin.apt_repository:
+    #     repo: deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian bookworm main
+    #     state: present
+    #     update_cache: true
     - name: Install nginx and certbot packages
-      pacman:
+      apt:
         name:
           - git
           - rsync
           - nginx
+          - libnginx-mod-stream
           - certbot
-          - certbot-dns-cloudflare
+          - python3-certbot-dns-cloudflare
         state: present
     - name: Checkout configuration
       git:
@@ -53,6 +69,11 @@
         name: nginx
         state: started
         enabled: true
+    # - name: Enable and start tailscale service
+    #   service:
+    #     name: tailscaled
+    #     state: started
+        # enabled: true
     # - name: Copy the sync script to target server
     #   copy:
     #     src: files/sync-update-config.sh

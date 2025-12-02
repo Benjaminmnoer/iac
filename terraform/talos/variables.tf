@@ -2,7 +2,13 @@
 variable "default_gateway" {
   description = "Default gateway IP address"
   type = string
-  default = "192.168.3.1"
+  default = "192.168.110.1"
+}
+
+variable "default_prefix_length" {
+  description = "Default network prefix length"
+  type = number
+  default = 27
 }
 
 #################### PROXMOX ####################
@@ -30,27 +36,27 @@ variable "talos_img_schematic" {
 
 variable "talos_version" {
   type = string
-  default = "1.10.4"
+  default = "1.11.5"
 }
 
 variable "antonidas_ip" {
   type = string
-  default = "192.168.3.3"
+  default = "192.168.110.4"
 }
 
 variable "jaina_ip" {
   type = string
-  default = "192.168.3.4"
+  default = "192.168.110.5"
 }
 
 variable "khadgar_ip" {
   type = string
-  default = "192.168.3.5"
+  default = "192.168.110.6"
 }
 
 variable "rhonin_ip" {
   type = string
-  default = "192.168.3.6"
+  default = "192.168.110.7"
 }
 
 variable "talos_cluster_config" {
@@ -58,18 +64,10 @@ variable "talos_cluster_config" {
     name = string
     domain = string
     endpoint = string
-    proxy = object({
-      ip = string
-      aliases = list(string)
-    })
   })
   default = {
     name = "Kirin Tor"
     domain = "benjaminmnoer.dk"
     endpoint = "https://kirintor.benjaminmnoer.dk:6443"
-    proxy = {
-      ip = "192.168.2.6"
-      aliases = [ "kirintor", "kirintor.benjaminmnoer.dk" ]
-    }
   }
 }

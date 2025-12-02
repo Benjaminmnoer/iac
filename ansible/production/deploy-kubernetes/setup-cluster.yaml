@@ -5,9 +5,9 @@
     - name: github_pat
       prompt: "Github PAT"
   vars:
-    talos_version: "1.10.4"
-    kubernetes_version: "1.33.1"
-    hubble_version: "1.17.5"
+    talos_version: "1.11.5"
+    kubernetes_version: "1.34.0"
+    hubble_version: "1.18.3"
     cluster_name: "Kirin Tor"
     flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
     key_fp: "6B021152E518C20179D5558C51DE92958775C0C2"
@@ -90,7 +90,7 @@
         release_namespace: kube-system
         create_namespace: true
         update_repo_cache: true
-        chart_version: 1.17.5
+        chart_version: 1.18.3
         set_values:
           - value: ipam.mode=kubernetes
           - value: kubeProxyReplacement=true
@@ -98,7 +98,7 @@
           - value: securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
           - value: cgroup.autoMount.enabled=false
           - value: cgroup.hostRoot=/sys/fs/cgroup
-          - value: k8sServiceHost=192.168.3.3
+          - value: k8sServiceHost=192.168.110.4
           - value: k8sServicePort=6443
           - value: gatewayAPI.enabled=true
           - value: gatewayAPI.enableAlpn=true

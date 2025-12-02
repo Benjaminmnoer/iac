@@ -1,0 +1,20 @@
+---
+- name: Debug commands
+  debug:
+    msg: qm start "{{ item }}"
+    verbosity: 1
+
+- name: Check VM statuses before starting
+  command: qm status "{{ item }}"
+  register: vm_status
+  become: true
+
+- name: Start VM
+  command: qm start "{{ item }}"
+  register: start_result
+  become: true
+  when: vm_status.stdout is not search("running")
+
+- name: Show VM start results
+  debug:
+    var: start_result

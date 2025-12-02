@@ -1,0 +1,24 @@
+---
+- name: Shut down Talos Cluster VMs
+  hosts: proxmox
+  run_once: true
+  vars:
+    talos_controlplane_ids: "{{ groups['talos-controlplane'] | map('extract', hostvars, 'vmid') | list }}"
+    talos_worker_ids: "{{ groups['talos-workers'] | map('extract', hostvars, 'vmid') | list }}"
+
+  tasks:
+    - name: Shut down worker VMs
+      include_tasks: shutdown-proxmox-vm.yaml
+      loop: "{{ talos_worker_ids }}"
+
+    - name: Wait for 60 seconds to allow VMs to shut down
+      pause:
+        seconds: 60
+
+    - name: Shutdown controlplane VMs
+      include_tasks: shutdown-proxmox-vm.yaml
+      loop: "{{ talos_controlplane_ids }}"
+
+    - name: Final pause to ensure all VMs are down
+      pause:
+        seconds: 60

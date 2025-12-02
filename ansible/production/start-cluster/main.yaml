@@ -1,0 +1,24 @@
+---
+- name: Start Talos Cluster VMs
+  hosts: proxmox
+  run_once: true
+  vars:
+    talos_controlplane_ids: "{{ groups['talos-controlplane'] | map('extract', hostvars, 'vmid') | list }}"
+    talos_worker_ids: "{{ groups['talos-workers'] | map('extract', hostvars, 'vmid') | list }}"
+
+  tasks:
+    - name: Start controlplane VMs
+      include_tasks: start-proxmox-vm.yaml
+      loop: "{{ talos_controlplane_ids }}"
+
+    - name: Wait for 60 seconds to allow VMs to boot
+      pause:
+        seconds: 60
+
+    - name: Start controlplane VMs
+      include_tasks: start-proxmox-vm.yaml
+      loop: "{{ talos_worker_ids }}"
+
+    - name: Final pause to ensure all VMs are up
+      pause:
+        seconds: 60
