@@ -1,0 +1,11 @@
+version: v1alpha1
+machine:
+  certSANs:
+    - kirintor
+    - kirintor.benjaminmnoer.dk
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true

@@ -16,7 +16,6 @@ resource "proxmox_virtual_environment_firewall_ipset" "trusted_clients" {
       name    = cidr.value.ip
       comment = cidr.value.comment
     }
-
   }
 }
 
@@ -31,7 +30,7 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "manageme
     action  = "ACCEPT"
     comment = "Allow 8006"
     source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
-    dest    = "${var.host_ip}"
+    dest    = "${var.cluster_network}"
     dport   = "8006"
     proto   = "tcp"
     log     = "nolog"
@@ -42,7 +41,7 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "manageme
     action  = "ACCEPT"
     comment = "Allow SSH"
     source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
-    dest    = "${var.host_ip}"
+    dest    = "${var.cluster_network}"
     macro   = "SSH"
     log     = "info"
   }

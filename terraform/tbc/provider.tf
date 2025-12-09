@@ -4,12 +4,16 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.86.0"
     }
+    talos = {
+      source = "siderolabs/talos"
+      version = "0.9.0"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "tfstate"
     storage_account_name = "tfstate27519"
     container_name       = "tfstate"
-    key                  = "azeroth.terraform.tfstate"
+    key                  = "tbc.terraform.tfstate"
   }
 }
 
@@ -29,9 +33,12 @@ provider "proxmox" {
     agent       = true
     username    = "root"
     private_key = file("~/.ssh/id_ed25519")
-    node {
-      name = "azeroth"
-      address = "192.168.100.4"
+    dynamic "node" {
+      for_each = var.cluster_nodes
+      content {
+        name = each.key
+        address = each.value.ip
+      }
     }
   }
 }
