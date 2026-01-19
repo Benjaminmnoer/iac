@@ -1,0 +1,22 @@
+---
+- name: Log to ram
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: '^#?Storage='
+    line: 'Storage=volatile'
+    state: present
+  become: true
+
+- name: Disable forward to syslog
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: '^#?ForwardToSyslog='
+    line: 'ForwardToSyslog=no'
+    state: present
+  become: true
+
+- name: Restart systemd-journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+  become: true
