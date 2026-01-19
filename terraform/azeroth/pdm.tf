@@ -81,7 +81,7 @@ resource "proxmox_virtual_environment_firewall_rules" "cosmos" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
+    source  = "+${module.proxmox.ipset_trusted_clients_name}"
     dest    = var.cosmos_ip
     dport   = "8443"
     proto   = "tcp"

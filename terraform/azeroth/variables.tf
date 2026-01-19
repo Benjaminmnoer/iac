@@ -21,14 +21,16 @@ variable "cf_token" {
   type        = string
 }
 
-variable "host_ip" {
-  description = "IP address of the proxmox host"
-  type        = string
+variable "cluster_nodes" {
+  description = "List of cluster nodes"
+  type = map(object({
+    ip      = string
+  }))
 }
 
 variable "trusted_clients" {
-  description = "List of allowed client IP addresses for management access"
-  type = list(object({
+  description = "List of allowed client IP for management access"
+  type = map(object({
     ip      = string
     comment = string
   }))
