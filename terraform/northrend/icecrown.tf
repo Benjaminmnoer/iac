@@ -9,6 +9,14 @@
 
 resource "proxmox_virtual_environment_vm" "icecrown" {
   # depends_on      = [proxmox_virtual_environment_download_file.manjaro-kde-img]
+
+  lifecycle {
+    ignore_changes = [
+      started,
+      
+    ]
+  }
+
   name            = "icecrown"
   description     = "Manjaro KDE Gaming VM. Managed by Terraform."
   tags            = ["terraform", "arch", "gaming", "manjaro"]
@@ -35,7 +43,7 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   }
 
   memory {
-    dedicated = 24576
+    dedicated = 16384
   }
 
   agent {
@@ -57,7 +65,7 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   disk {
     datastore_id = "fdata"
     interface    = "scsi1"
-    size         = 500
+    size         = 700
     iothread     = true
   }
 
