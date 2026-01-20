@@ -46,3 +46,6 @@ clusters/production/talosconfig
 # Ansible inventory
 ansible/production/inventory.yaml
 ansible/inventory/*
+
+# Proxmox disks
+*.qcow2

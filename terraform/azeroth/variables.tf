@@ -55,3 +55,8 @@ variable "lorekeeper_ip" {
 variable "cosmos_ip" {
   type = string
 }
+
+#################### HAOS ####################
+variable "haos_ip" {
+  type = string
+}
