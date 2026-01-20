@@ -5,7 +5,6 @@ resource "proxmox_virtual_environment_file" "haos_disk_file" {
 
   source_file {
     path = "./haos_ova-17.0.qcow2"
-
   }
 }
 
