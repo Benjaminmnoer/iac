@@ -5,7 +5,7 @@ resource "proxmox_virtual_environment_file" "haos_disk_file" {
 
   source_file {
     path = "./haos_ova-17.0.qcow2"
-    
+
   }
 }
 
@@ -45,14 +45,14 @@ resource "proxmox_virtual_environment_vm" "haos" {
   }
 
   network_device {
-    bridge  = "vmbr0"
+    bridge = "vmbr0"
   }
 
   disk {
     datastore_id = "local-zfs"
     interface    = "scsi0"
     size         = 100
-    import_from = proxmox_virtual_environment_file.haos_disk_file.id
+    import_from  = proxmox_virtual_environment_file.haos_disk_file.id
   }
 
   operating_system {
@@ -86,8 +86,7 @@ resource "proxmox_virtual_environment_firewall_rules" "haos" {
     comment = "Allow HTTPS"
     source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
     dest    = var.haos_ip
-    dport   = "8123"
-    proto   = "tcp"
+    macro   = "HTTPS"
     log     = "nolog"
   }
 }
