@@ -40,11 +40,13 @@ resource "proxmox_virtual_environment_vm" "haos" {
   }
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   network_device {
     bridge = "vmbr0"
+    vlan_id = 160
+    firewall = true
   }
 
   disk {
@@ -56,6 +58,11 @@ resource "proxmox_virtual_environment_vm" "haos" {
 
   operating_system {
     type = "l26"
+  }
+
+  usb {
+    host = "10c4:ea60"
+    usb3 = true
   }
 }
 
@@ -83,7 +90,6 @@ resource "proxmox_virtual_environment_firewall_rules" "haos" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
     dest    = var.haos_ip
     macro   = "HTTPS"
     log     = "nolog"
