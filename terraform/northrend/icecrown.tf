@@ -93,9 +93,21 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
     rombar = true
   }
 
-  hostpci {
-    device = "hostpci3"
-    id     = "0000:06:00.0"
-    rombar = true
+  # Ethernet
+  # hostpci {
+  #   device = "hostpci3"
+  #   id     = "0000:06:00.0"
+  #   rombar = true
+  # }
+  
+  # Wifi
+  # hostpci {
+  #   device = "hostpci4"
+  #   id     = "0000:07:00.0"
+  #   rombar = true
+  # }
+
+  network_device {
+    bridge = "vmbr0"
   }
 }
