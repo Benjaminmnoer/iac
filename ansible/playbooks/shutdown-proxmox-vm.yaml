@@ -1,14 +1,14 @@
 ---
-- name: Start Proxmox VMs
+- name: Shutdown Proxmox VMs
   hosts: proxmox
   tasks:
   - name: Debug commands
     debug:
-      msg: qm start "{{ item }}"
+      msg: qm shutdown "{{ item }}"
       verbosity: 1
     loop: "{{ proxmox_vms }}"
 
-  - name: Check VM statuses before starting
+  - name: Check VM statuses before shutting down
     command: qm status "{{ item }}"
     register: vm_status
     become: true
@@ -20,15 +20,15 @@
       msg: "{{ vm_status }}"
       verbosity: 1
 
-  - name: Start VM
-    command: qm start "{{ item.item }}"
-    register: start_result
+  - name: Shutdown VM
+    command: qm shutdown "{{ item.item }}"
+    register: shutdown_results
     become: true
-    when: item.stdout is not search("running")
+    when: item.stdout is not search("stopped")
     with_items: "{{ vm_status.results }}"
-    changed_when: start_result.rc == 0
+    changed_when: shutdown_results.rc == 0
 
-  - name: Show VM start results
+  - name: Show VM shutdown results
     debug:
-      var: start_result
+      var: shutdown_results
       verbosity: 1

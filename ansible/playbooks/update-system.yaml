@@ -1,0 +1,18 @@
+- name: Update all hosts
+  hosts: all
+  tasks:
+  - name: Update Proxmox Backup Server
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: dist
+    when: "'pbs' in {{group_names}}"
+  - name: Update Proxmox Datacenter Manager
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: dist
+    when: "'pdm' in {{group_names}}"
+  - name: Update Jump
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: full
+    when: "'jump' in {{group_names}}"
