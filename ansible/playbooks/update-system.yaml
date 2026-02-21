@@ -1,18 +1,34 @@
+---
+- name: Backup VMs before update
+  hosts: auto-patch-vms
+  become: true
+  roles:
+    - backup-vms
+
 - name: Update all hosts
   hosts: all
   tasks:
-  - name: Update Proxmox Backup Server
+  - name: Backup VMs before update
+    ansible.builtin.command: "qm backup {{ inventory_hostname }} --mode snapshot --storage backup"
+    when: backup_before_update and host_type == "vm"
+  - name: Update VMs (apt)
     ansible.builtin.apt:
       update_cache: yes
-      upgrade: dist
-    when: "'pbs' in {{group_names}}"
-  - name: Update Proxmox Datacenter Manager
+      upgrade: "{{update_type}}"
+    when: auto_update and host_type = "vm" and package_manager == "apt"
+    register: update_result
+
+  - name: Reboot Proxmox hosts
+    ansible.builtin.reboot:
+    when: reboot_after_update and update_result.changed
+  
+  - name: Update Proxmox hosts (apt)
     ansible.builtin.apt:
       update_cache: yes
-      upgrade: dist
-    when: "'pdm' in {{group_names}}"
-  - name: Update Jump
-    ansible.builtin.apt:
-      update_cache: yes
-      upgrade: full
-    when: "'jump' in {{group_names}}"
+      upgrade: "{{update_type}}"
+    when: auto_update and host_type = "proxmox" and package_manager == "apt"
+    register: update_result
+
+  - name: Reboot Proxmox hosts
+    ansible.builtin.reboot:
+    when: reboot_after_update and update_result.changed
