@@ -1,0 +1,7 @@
+---
+- name: Update (pacman)
+  community.general.pacman:
+    update_cache: true
+    upgrade: true
+  when: upgrade_strategy == "pacman"
+  register: update_result

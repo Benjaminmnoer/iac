@@ -1,34 +1,84 @@
 ---
-- name: Backup VMs before update
-  hosts: auto-patch-vms
+- name: Prepare designated VMs on Proxmox
+  hosts: proxmox
   become: true
-  roles:
-    - backup-vms
 
-- name: Update all hosts
-  hosts: all
+  vars:
+    backup: true # Can be overridden on CLI with --extra-vars "backup=false"
+    backup_storage: "lorekeeper"
+    backup_mode: "snapshot"
+    backup_compress: "zstd"
+
   tasks:
-  - name: Backup VMs before update
-    ansible.builtin.command: "qm backup {{ inventory_hostname }} --mode snapshot --storage backup"
-    when: backup_before_update and host_type == "vm"
-  - name: Update VMs (apt)
-    ansible.builtin.apt:
-      update_cache: yes
-      upgrade: "{{update_type}}"
-    when: auto_update and host_type = "vm" and package_manager == "apt"
-    register: update_result
+    - name: Run vzdump backup for designated VMs
+      ansible.builtin.command: >
+        vzdump {{ item }}
+        --storage {{ backup_storage }}
+        --mode {{ backup_mode }}
+        --compress {{ backup_compress }}
+      loop: "{{ backup_vms | default([]) }}"
+      when: backup and backup_vms is defined
+      register: backup_result
+      changed_when: false  # Backups are not considered a "change" for idempotency
 
-  - name: Reboot Proxmox hosts
-    ansible.builtin.reboot:
-    when: reboot_after_update and update_result.changed
-  
-  - name: Update Proxmox hosts (apt)
-    ansible.builtin.apt:
-      update_cache: yes
-      upgrade: "{{update_type}}"
-    when: auto_update and host_type = "proxmox" and package_manager == "apt"
-    register: update_result
+    - name: Start VMs nominated for patching
+      ansible.builtin.shell: set -o pipefail && (qm status {{ item }} | grep -q "running" || qm start {{ item }})
+      loop: "{{ patch_vms | default([]) }}"
+      when: patch_vms is defined
+      changed_when: false  # Starting VMs is not considered a "change" for idempotency
 
-  - name: Reboot Proxmox hosts
-    ansible.builtin.reboot:
-    when: reboot_after_update and update_result.changed
+# ==========================================
+# STAGE 2 — Patch VMs
+# ==========================================
+- name: Patch guest VMs
+  hosts: autopatch
+  become: true
+
+  roles:
+    - role: update_apt
+      when: upgrade_strategy == "apt"
+
+    - role: update_pacman
+      when: upgrade_strategy == "pacman"
+
+    # - role: update_dnf
+    #   when: upgrade_strategy == "dnf"
+
+    # - role: update_yum
+    #   when: upgrade_strategy == "yum"
+
+# ==========================================
+# STAGE 3 — Update Proxmox hosts
+# ==========================================
+- name: Update Proxmox hosts
+  hosts: proxmox
+  become: true
+  serial: 1   # Update one hypervisor at a time
+
+  tasks:
+    - name: Full upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
+# ==========================================
+# STAGE 4 — Reboot Proxmox hosts (except controller)
+# ==========================================
+- name: Reboot Proxmox hosts safely
+  hosts: proxmox
+  become: true
+  serial: 1
+
+  vars:
+    controller_node: "{{ ansible_controller_proxmox }}"
+
+  tasks:
+    - name: Skip reboot if this is controller node
+      ansible.builtin.meta: end_host
+      when: inventory_hostname == controller_node
+
+    - name: Reboot host
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after patching"
+        reboot_timeout: 300
+        test_command: uptime

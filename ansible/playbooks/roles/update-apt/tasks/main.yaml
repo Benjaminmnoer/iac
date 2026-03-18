@@ -1,7 +1,0 @@
----
-- name: Update VMs (apt)
-  ansible.builtin.apt:
-    update_cache: yes
-    upgrade: "{{update_type}}"
-  when: package_manager == "apt"
-  register: update_result
