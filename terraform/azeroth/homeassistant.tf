@@ -45,7 +45,6 @@ resource "proxmox_virtual_environment_vm" "haos" {
 
   network_device {
     bridge = "vmbr0"
-    vlan_id = 160
     firewall = true
   }
 
