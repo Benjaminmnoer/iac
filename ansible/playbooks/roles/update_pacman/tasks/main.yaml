@@ -1,4 +1,8 @@
 ---
+- name: Wait 300 seconds
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
 - name: Update (pacman)
   community.general.pacman:
     update_cache: true

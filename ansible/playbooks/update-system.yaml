@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    backup: true # Can be overridden on CLI with --extra-vars "backup=false"
+    backup: true # Can be overridden on CLI with --extra-vars '{"backup": false}' to skip backup stage
     backup_storage: "lorekeeper"
     backup_mode: "snapshot"
     backup_compress: "zstd"
@@ -54,31 +54,20 @@
   hosts: proxmox
   become: true
   serial: 1   # Update one hypervisor at a time
+  vars:
+    controller_node: "{{ ansible_controller_proxmox }}"
 
   tasks:
     - name: Full upgrade
       ansible.builtin.apt:
         update_cache: true
         upgrade: dist
+      register: upgrade_result
 
-# ==========================================
-# STAGE 4 — Reboot Proxmox hosts (except controller)
-# ==========================================
-- name: Reboot Proxmox hosts safely
-  hosts: proxmox
-  become: true
-  serial: 1
-
-  vars:
-    controller_node: "{{ ansible_controller_proxmox }}"
-
-  tasks:
-    - name: Skip reboot if this is controller node
-      ansible.builtin.meta: end_host
-      when: inventory_hostname == controller_node
-
+  handlers:
     - name: Reboot host
       ansible.builtin.reboot:
         msg: "Reboot initiated by Ansible after patching"
         reboot_timeout: 300
         test_command: uptime
+      when: inventory_hostname != controller_node
