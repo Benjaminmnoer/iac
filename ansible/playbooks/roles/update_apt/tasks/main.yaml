@@ -1,0 +1,11 @@
+---
+- name: Wait 300 seconds
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
+- name: Update VMs (apt)
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: "{{ upgrade_type }}"
+  when: upgrade_strategy == "apt"
+  register: update_result

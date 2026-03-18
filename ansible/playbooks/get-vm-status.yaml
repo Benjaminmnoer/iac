@@ -1,0 +1,16 @@
+---
+- name: Start Proxmox VMs
+  hosts: proxmox
+  tasks:
+    - name: Check VM statuses before starting
+      ansible.builtin.command: qm status "{{ item }}"
+      register: vm_status
+      become: true
+      loop: "{{ patch_vms | default([]) }}"
+      when: patch_vms is defined
+      changed_when: false
+
+    - name: Debug status
+      ansible.builtin.debug:
+        msg: "{{ vm_status }}"
+        verbosity: 1

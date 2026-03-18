@@ -1,0 +1,34 @@
+---
+- name: Shutdown Proxmox VMs
+  hosts: proxmox
+  tasks:
+  - name: Debug commands
+    debug:
+      msg: qm shutdown "{{ item }}"
+      verbosity: 1
+    loop: "{{ proxmox_vms }}"
+
+  - name: Check VM statuses before shutting down
+    command: qm status "{{ item }}"
+    register: vm_status
+    become: true
+    loop: "{{ proxmox_vms }}"
+    changed_when: false
+
+  - name: Debug status
+    debug:
+      msg: "{{ vm_status }}"
+      verbosity: 1
+
+  - name: Shutdown VM
+    command: qm shutdown "{{ item.item }}"
+    register: shutdown_results
+    become: true
+    when: item.stdout is not search("stopped")
+    with_items: "{{ vm_status.results }}"
+    changed_when: shutdown_results.rc == 0
+
+  - name: Show VM shutdown results
+    debug:
+      var: shutdown_results
+      verbosity: 1

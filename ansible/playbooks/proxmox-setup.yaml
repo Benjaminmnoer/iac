@@ -1,0 +1,11 @@
+---
+- name: Proxmox post install
+  hosts: proxmox
+  roles:
+    - proxmox-setup
+
+- name: Enable GPU passthrough on Proxmox
+  hosts: gpupassthrough
+  become: true
+  roles:
+    - gpupassthrough

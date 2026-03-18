@@ -1,0 +1,21 @@
+---
+- name: Install sudo
+  ansible.builtin.apt:
+    name: sudo
+    state: present
+  become: true
+
+- name: Allow sudo group full access
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "%sudo   ALL = (ALL) NOPASSWD: ALL"
+  become: true
+
+- name: Allow terraform required access
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: |
+      %terraform ALL=(root) NOPASSWD: /sbin/pvesm
+      %terraform ALL=(root) NOPASSWD: /sbin/qm
+      %terraform ALL=(root) NOPASSWD: /usr/bin/tee /var/lib/vz/*
+  become: true

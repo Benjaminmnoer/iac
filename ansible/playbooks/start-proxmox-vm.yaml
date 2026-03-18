@@ -1,0 +1,34 @@
+---
+- name: Start Proxmox VMs
+  hosts: proxmox
+  tasks:
+  - name: Debug commands
+    debug:
+      msg: qm start "{{ item }}"
+      verbosity: 1
+    loop: "{{ proxmox_vms }}"
+
+  - name: Check VM statuses before starting
+    command: qm status "{{ item }}"
+    register: vm_status
+    become: true
+    loop: "{{ proxmox_vms }}"
+    changed_when: false
+
+  - name: Debug status
+    debug:
+      msg: "{{ vm_status }}"
+      verbosity: 1
+
+  - name: Start VM
+    command: qm start "{{ item.item }}"
+    register: start_result
+    become: true
+    when: item.stdout is not search("running")
+    with_items: "{{ vm_status.results }}"
+    changed_when: start_result.rc == 0
+
+  - name: Show VM start results
+    debug:
+      var: start_result
+      verbosity: 1

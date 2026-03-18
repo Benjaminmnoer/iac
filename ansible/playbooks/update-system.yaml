@@ -1,0 +1,73 @@
+---
+- name: Prepare designated VMs on Proxmox
+  hosts: proxmox
+  become: true
+
+  vars:
+    backup: true # Can be overridden on CLI with --extra-vars '{"backup": false}' to skip backup stage
+    backup_storage: "lorekeeper"
+    backup_mode: "snapshot"
+    backup_compress: "zstd"
+
+  tasks:
+    - name: Run vzdump backup for designated VMs
+      ansible.builtin.command: >
+        vzdump {{ item }}
+        --storage {{ backup_storage }}
+        --mode {{ backup_mode }}
+        --compress {{ backup_compress }}
+      loop: "{{ backup_vms | default([]) }}"
+      when: backup and backup_vms is defined
+      register: backup_result
+      changed_when: false  # Backups are not considered a "change" for idempotency
+
+    - name: Start VMs nominated for patching
+      ansible.builtin.shell: set -o pipefail && (qm status {{ item }} | grep -q "running" || qm start {{ item }})
+      loop: "{{ patch_vms | default([]) }}"
+      when: patch_vms is defined
+      changed_when: false  # Starting VMs is not considered a "change" for idempotency
+
+# ==========================================
+# STAGE 2 — Patch VMs
+# ==========================================
+- name: Patch guest VMs
+  hosts: autopatch
+  become: true
+
+  roles:
+    - role: update_apt
+      when: upgrade_strategy == "apt"
+
+    - role: update_pacman
+      when: upgrade_strategy == "pacman"
+
+    # - role: update_dnf
+    #   when: upgrade_strategy == "dnf"
+
+    # - role: update_yum
+    #   when: upgrade_strategy == "yum"
+
+# ==========================================
+# STAGE 3 — Update Proxmox hosts
+# ==========================================
+- name: Update Proxmox hosts
+  hosts: proxmox
+  become: true
+  serial: 1   # Update one hypervisor at a time
+  vars:
+    controller_node: "{{ ansible_controller_proxmox }}"
+
+  tasks:
+    - name: Full upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+      register: upgrade_result
+
+  handlers:
+    - name: Reboot host
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after patching"
+        reboot_timeout: 300
+        test_command: uptime
+      when: inventory_hostname != controller_node
