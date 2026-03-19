@@ -2,11 +2,11 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.86.0"
+      version = "0.98.1"
     }
     talos = {
       source = "siderolabs/talos"
-      version = "0.9.0"
+      version = "0.10.1"
     }
   }
   backend "azurerm" {
@@ -33,12 +33,18 @@ provider "proxmox" {
     agent       = true
     username    = "root"
     private_key = file("~/.ssh/id_ed25519")
-    dynamic "node" {
-      for_each = var.cluster_nodes
-      content {
-        name = each.key
-        address = each.value.ip
-      }
+    
+    node {
+      name = "outland.benjaminmnoer.dk"
+      address = "192.168.100.2"
+    }
+    node {
+      name = "easternkingdoms.benjaminmnoer.dk"
+      address = "192.168.100.5"
+    }
+    node {
+      name = "kalimdor.benjaminmnoer.dk"
+      address = "192.168.100.6"
     }
   }
 }

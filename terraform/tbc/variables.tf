@@ -16,23 +16,6 @@ variable "virtual_environment_password" {
 }
 
 #################### General ####################
-variable "default_gateway" {
-  description = "Default gateway IP address"
-  type = string
-  default = "192.168.110.1"
-}
-
-variable "default_prefix_length" {
-  description = "Default network prefix length"
-  type = number
-  default = 26
-}
-
-variable "cluster_network" {
-  description = "Cluster network CIDR, used for firewall rules"
-  type = string
-}
-
 variable "cf_token" {
   description = "Cloudflare API token"
   type        = string
@@ -45,11 +28,11 @@ variable "cluster_nodes" {
   }))
 }
 
-variable "trusted_clients" {
-  description = "List of allowed client IP addresses for management access"
-  type = list(object({
+variable "management_ipset" {
+  description = "List of allowed client IP for management access"
+  type = map(object({
     ip      = string
-    comment = string
+    comment = optional(string, "")
   }))
 }
 
@@ -61,7 +44,7 @@ variable "talos_img_schematic" {
 
 variable "talos_version" {
   type = string
-  default = "1.11.5"
+  default = "v1.12.6"
 }
 
 variable "talos_controlplane_nodes" {

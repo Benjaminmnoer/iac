@@ -37,11 +37,11 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
   }
 
   initialization {
-    datastore_id = "local"
+    datastore_id = "local-zfs"
     ip_config {
       ipv4 {
-        address = "${each.value.ip}/${var.default_prefix_length}"
-        gateway = var.default_gateway
+        address = "${each.value.ip}/26"
+        gateway = "192.168.110.1"
       }
     }
   }
