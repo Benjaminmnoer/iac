@@ -63,6 +63,7 @@
         update_cache: true
         upgrade: dist
       register: upgrade_result
+      notify: Reboot host
 
   handlers:
     - name: Reboot host
