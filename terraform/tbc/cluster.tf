@@ -15,7 +15,7 @@ resource "proxmox_virtual_environment_storage_cifs" "stormwind_tbc" {
   share  = "tbc"
 
   username = "tbc-user"
-  password = "tbc-user"
+  password = var.cifs_password
 
   content                  = ["rootdir", "vztmpl"]
   # domain                   = "WORKGROUP"

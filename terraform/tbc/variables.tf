@@ -36,6 +36,12 @@ variable "management_ipset" {
   }))
 }
 
+variable "cifs_password" {
+  description = "Password for CIFS storage authentication"
+  type        = string
+  sensitive   = true
+}
+
 #################### TALOS ####################
 variable "talos_jumphost_alias_name" {
   description = "Name of the firewall alias for the Talos jumphost"
