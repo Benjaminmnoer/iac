@@ -37,6 +37,18 @@ variable "management_ipset" {
 }
 
 #################### TALOS ####################
+variable "talos_jumphost_alias_name" {
+  description = "Name of the firewall alias for the Talos jumphost"
+  type = string
+}
+
+variable "talos_jumphost" {
+  type = object({
+    cidr    = string
+    comment = optional(string, "")
+  })
+}
+
 variable "talos_img_schematic" {
   type = string
   default = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
@@ -67,9 +79,4 @@ variable "talos_cluster_config" {
     domain = string
     endpoint = string
   })
-  default = {
-    name = "Kirin Tor"
-    domain = "benjaminmnoer.dk"
-    endpoint = "https://kirintor.benjaminmnoer.dk:6443"
-  }
 }
