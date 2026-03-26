@@ -16,23 +16,6 @@ variable "virtual_environment_password" {
 }
 
 #################### General ####################
-variable "default_gateway" {
-  description = "Default gateway IP address"
-  type = string
-  default = "192.168.110.1"
-}
-
-variable "default_prefix_length" {
-  description = "Default network prefix length"
-  type = number
-  default = 26
-}
-
-variable "cluster_network" {
-  description = "Cluster network CIDR, used for firewall rules"
-  type = string
-}
-
 variable "cf_token" {
   description = "Cloudflare API token"
   type        = string
@@ -45,15 +28,33 @@ variable "cluster_nodes" {
   }))
 }
 
-variable "trusted_clients" {
-  description = "List of allowed client IP addresses for management access"
-  type = list(object({
+variable "management_ipset" {
+  description = "List of allowed client IP for management access"
+  type = map(object({
     ip      = string
-    comment = string
+    comment = optional(string, "")
   }))
 }
 
+variable "cifs_password" {
+  description = "Password for CIFS storage authentication"
+  type        = string
+  sensitive   = true
+}
+
 #################### TALOS ####################
+variable "talos_jumphost_alias_name" {
+  description = "Name of the firewall alias for the Talos jumphost"
+  type = string
+}
+
+variable "talos_jumphost" {
+  type = object({
+    cidr    = string
+    comment = optional(string, "")
+  })
+}
+
 variable "talos_img_schematic" {
   type = string
   default = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
@@ -61,7 +62,7 @@ variable "talos_img_schematic" {
 
 variable "talos_version" {
   type = string
-  default = "1.11.5"
+  default = "v1.12.6"
 }
 
 variable "talos_controlplane_nodes" {
@@ -84,9 +85,4 @@ variable "talos_cluster_config" {
     domain = string
     endpoint = string
   })
-  default = {
-    name = "Kirin Tor"
-    domain = "benjaminmnoer.dk"
-    endpoint = "https://kirintor.benjaminmnoer.dk:6443"
-  }
 }

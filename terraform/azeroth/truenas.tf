@@ -117,7 +117,7 @@ resource "proxmox_virtual_environment_firewall_rules" "stormwind" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
+    source  = "+${module.proxmox.ipset_trusted_clients_name}"
     dest    = var.stormwind_ip
     macro   = "HTTPS"
     log     = "nolog"
