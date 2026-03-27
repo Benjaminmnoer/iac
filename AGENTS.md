@@ -49,9 +49,9 @@ This repository manages the infrastructure for a personal homelab environment ru
 │       ├── secrets/
 │       └── storage-classes/
 └── terraform/              # Terraform configurations
-    ├── azeroth/             # Main production environment
-    ├── tbc/                 # Talos cluster
-    ├── northrend/           # GPU passthrough
+    ├── azeroth/             # TrueNAS VM and auxiliary services
+    ├── tbc/                 # Three-node Talos cluster VMs
+    ├── northrend/           # Desktop gaming VM and test cluster
     └── test/                # Test environment
 ```
 

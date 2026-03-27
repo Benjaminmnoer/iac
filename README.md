@@ -1,38 +1,24 @@
 # Homelab Infrastructure as Code
 
-This repository contains the Infrastructure as Code (IaC) configuration for a personal homelab environment. It manages Proxmox VE hypervisors, Kubernetes clusters running Talos Linux, and various containerized applications.
+This repository holds the Infrastructure as Code configuration for my personal homelab. It consists mainly of Proxmox VE hypervisors, which are used to host a TrueNAS VM for storage and a Talos Linux k8s cluster for the main compute operations.
 
-## Architecture Overview
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                        Proxmox VE Cluster                      │
-├──────────┬──────────┬──────────┬──────────┬────────────────────┤
-│ outland  │ northrend│ azeroth  │ kalimdor │ eastern kingdoms   │
-│ (Intel)  │ (AMD/GPU)│ (Intel)  │ (Intel)  │ (Intel)            │
-└────┬─────┴────┬─────┴────┬─────┴──────────┴────────────────────┘
-     │          │
-     ▼          ▼
-┌─────────────────────────────────────┐
-│      Kubernetes Cluster (Talos)     │
-│  ┌─────────┐ ┌──────────────────┐   │
-│  │ Cilium  │ │ CSI Driver SMB   │   │
-│  └─────────┘ └──────────────────┘   │
-│  ┌─────────┐ ┌──────────────────┐   │
-│  │ Harbor  │ │ Podinfo/OneDev   │   │
-│  └─────────┘ └──────────────────┘   │
-└─────────────────────────────────────┘
-```
+The goal of this repository is to learn new skills and test things generally not available other places. 
 
 ## Quick Start
+1. Spin up jumphost
+2. Ensure connectivity and credentials to proxmox hosts
+3. Create Azure storage for backend
+4. In each terraform subfolder
+```
+tofu init
+tofu apply
+```
+5. Run ansible playbook deploy-talos-cluster.yaml
 
 ### Prerequisites
 
-- [Terraform](https://www.terraform.io/downloads) >= 1.0
-- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) >= 2.10
-- [SOPS](https://github.com/mozilla/sops/releases) for secrets management
-- PGP key configured for secrets encryption
-- SSH access to Proxmox nodes
+- [OpenTofu](https://opentofu.org/)
+- [Ansible](https://docs.ansible.com/)
 
 ### Initial Setup
 
@@ -42,17 +28,17 @@ This repository contains the Infrastructure as Code (IaC) configuration for a pe
    cd iac
    ```
 
-2. Configure Terraform backend (Azure Blob Storage credentials)
+2. Configure OpenTofu backend (Azure Blob Storage credentials)
 
 3. Initialize Terraform:
    ```bash
    cd terraform/tbc
-   terraform init
+   tofu init
    ```
 
 4. Run Ansible playbooks for initial host configuration:
    ```bash
-   ansible-playbook -i ansible/inventory/production.yaml ansible/playbooks/proxmox-setup.yaml
+   ansible-playbook -i ansible/inventory/production.yaml ansible/deploy-talos-cluster.yaml
    ```
 
 ## Repository Structure
@@ -70,12 +56,12 @@ This repository contains the Infrastructure as Code (IaC) configuration for a pe
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | Hypervisor | Proxmox VE | VM orchestration |
+| IaC | OpenTofu | Infrastructure provisioning |
 | Kubernetes | Talos Linux | Container orchestration |
 | GitOps | Flux CD | Git-based deployments |
-| Networking | Cilium | CNI plugin with Gateway API |
-| Storage | CSI Driver SMB | SMB share provisioning |
+| Storage | TrueNAS SMB share | Storage management (ZFS) |
+| Networking (k8s) | Cilium | CNI plugin with Gateway API |
 | Secrets | SOPS | Encrypted secrets management |
-| IaC | Terraform | Infrastructure provisioning |
 
 ## Available Applications
 
@@ -86,7 +72,7 @@ This repository contains the Infrastructure as Code (IaC) configuration for a pe
 
 ## Common Operations
 
-### Deploy Infrastructure Changes
+### Update infrastructure components
 
 ```bash
 # Terraform
@@ -113,13 +99,6 @@ flux reconcile kustomization production --with-source
 export GPG_TTY=$(tty)
 sops clusters/production/secrets/<file>.yaml
 ```
-
-## Contributing
-
-1. Create a feature branch from `master`
-2. Make changes and test in `test/` environment
-3. Submit a pull request to `master`
-4. Flux will automatically deploy changes
 
 ## License
 
