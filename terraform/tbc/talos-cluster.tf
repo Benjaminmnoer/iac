@@ -1,6 +1,6 @@
 resource "proxmox_virtual_environment_firewall_ipset" "talos_clients_ipset" {
-  name = "talos_clients"
-  depends_on = [ module.proxmox ]
+  name       = "talos_clients"
+  depends_on = [module.proxmox]
 
   cidr {
     name = "dc/${var.talos_jumphost_alias_name}"
@@ -16,9 +16,9 @@ resource "proxmox_virtual_environment_firewall_ipset" "talos_clients_ipset" {
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "talos_node_access" {
-  depends_on = [ proxmox_virtual_environment_firewall_ipset.talos_clients_ipset, proxmox_virtual_environment_vm.talos_controlplane_nodes, proxmox_virtual_environment_vm.talos_worker_nodes ]
-  for_each = merge(proxmox_virtual_environment_vm.talos_controlplane_nodes, proxmox_virtual_environment_vm.talos_worker_nodes)
-  
+  depends_on = [proxmox_virtual_environment_firewall_ipset.talos_clients_ipset, proxmox_virtual_environment_vm.talos_controlplane_nodes, proxmox_virtual_environment_vm.talos_worker_nodes]
+  for_each   = merge(proxmox_virtual_environment_vm.talos_controlplane_nodes, proxmox_virtual_environment_vm.talos_worker_nodes)
+
   node_name = each.value.node_name
   vm_id     = each.value.vm_id
 
@@ -34,9 +34,9 @@ resource "proxmox_virtual_environment_firewall_rules" "talos_node_access" {
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "talos_api_access" {
-  depends_on = [ proxmox_virtual_environment_firewall_ipset.talos_clients_ipset, proxmox_virtual_environment_vm.talos_controlplane_nodes ]
-  for_each = proxmox_virtual_environment_vm.talos_controlplane_nodes
-  
+  depends_on = [proxmox_virtual_environment_firewall_ipset.talos_clients_ipset, proxmox_virtual_environment_vm.talos_controlplane_nodes, proxmox_virtual_environment_firewall_rules.talos_node_access]
+  for_each   = proxmox_virtual_environment_vm.talos_controlplane_nodes
+
   node_name = each.value.node_name
   vm_id     = each.value.vm_id
 
@@ -56,7 +56,7 @@ resource "talos_machine_secrets" "machine_secrets" {}
 data "talos_client_configuration" "talosconfig" {
   cluster_name         = var.talos_cluster_config.name
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
-  endpoints            = [ var.talos_cluster_config.endpoint ]
+  endpoints            = [var.talos_cluster_config.endpoint]
 }
 
 data "talos_machine_configuration" "machineconfig_controlplane" {
@@ -96,13 +96,13 @@ resource "talos_machine_configuration_apply" "worker_config_apply" {
 }
 
 resource "talos_machine_bootstrap" "bootstrap" {
-  depends_on           = [talos_machine_configuration_apply.worker_config_apply] 
+  depends_on           = [talos_machine_configuration_apply.worker_config_apply]
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
   node                 = values(var.talos_controlplane_nodes)[0].ip
 }
 
 resource "talos_cluster_kubeconfig" "kubeconfig" {
-  depends_on           = [talos_machine_bootstrap.bootstrap] 
+  depends_on           = [talos_machine_bootstrap.bootstrap]
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
   node                 = values(var.talos_controlplane_nodes)[0].ip
 }
