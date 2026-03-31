@@ -148,5 +148,5 @@ resource "proxmox_virtual_environment_haresource" "tbc_nginx" {
 output "tbc_nginx_password" {
   value       = random_password.tbc_nginx.result
   description = "The password for the tbc-nginx container user account"
-  sensitive = true
+  sensitive   = true
 }

@@ -5,7 +5,7 @@ terraform {
       version = "0.98.1"
     }
     talos = {
-      source = "siderolabs/talos"
+      source  = "siderolabs/talos"
       version = "0.10.1"
     }
   }
@@ -18,32 +18,32 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint  = var.virtual_environment_endpoint
+  endpoint = var.virtual_environment_endpoint
   # api_token = var.virtual_environment_api_token
-  username  = var.virtual_environment_username
-  password  = var.virtual_environment_password
+  username = var.virtual_environment_username
+  password = var.virtual_environment_password
 
   min_tls = 1.2
 
   # uncomment (unless on Windows...)
-  tmp_dir = "/var/tmp"
+  tmp_dir  = "/var/tmp"
   insecure = true
 
   ssh {
     agent       = true
     username    = "root"
     private_key = file("~/.ssh/id_ed25519")
-    
+
     node {
-      name = "outland.benjaminmnoer.dk"
+      name    = "outland.benjaminmnoer.dk"
       address = "192.168.100.2"
     }
     node {
-      name = "easternkingdoms.benjaminmnoer.dk"
+      name    = "easternkingdoms.benjaminmnoer.dk"
       address = "192.168.100.5"
     }
     node {
-      name = "kalimdor.benjaminmnoer.dk"
+      name    = "kalimdor.benjaminmnoer.dk"
       address = "192.168.100.6"
     }
   }

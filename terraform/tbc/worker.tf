@@ -5,13 +5,18 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
   tags        = ["terraform", "talos", "worker"]
   node_name   = each.value.node_name
   on_boot     = true
-  machine       = "q35"
-  bios          = "ovmf"
+  machine     = "q35"
+  bios        = "ovmf"
+  boot_order  = ["scsi0"]
 
   efi_disk {
     datastore_id      = "local-zfs"
     type              = "4m"
-    pre_enrolled_keys = true
+  }
+
+  tpm_state {
+    version      = "v2.0"
+    datastore_id = "local-zfs"
   }
 
   cpu {
@@ -28,8 +33,8 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
   }
 
   network_device {
-    bridge  = "vmbr0"
-    vlan_id = 110
+    bridge   = "vmbr0"
+    vlan_id  = 110
     firewall = true
   }
 
@@ -39,7 +44,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
     file_format  = "raw"
     interface    = "scsi0"
     size         = 100
-    
+
   }
 
   operating_system {
@@ -54,12 +59,16 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
         gateway = "192.168.110.1"
       }
     }
+    dns {
+      domain  = var.talos_cluster_config.domain
+      servers = ["192.168.110.1"]
+    }
   }
 }
 
 resource "proxmox_virtual_environment_firewall_options" "worker_fw_options" {
   depends_on = [proxmox_virtual_environment_vm.talos_worker_nodes]
-  for_each = proxmox_virtual_environment_vm.talos_worker_nodes
+  for_each   = proxmox_virtual_environment_vm.talos_worker_nodes
 
   node_name = each.value.node_name
   vm_id     = each.value.vm_id
