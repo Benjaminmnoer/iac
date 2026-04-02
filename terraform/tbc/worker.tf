@@ -9,9 +9,16 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
   bios        = "ovmf"
   boot_order  = ["scsi0"]
 
+  lifecycle {
+    ignore_changes = [
+      started,
+
+    ]
+  }
+
   efi_disk {
-    datastore_id      = "local-zfs"
-    type              = "4m"
+    datastore_id = "local-zfs"
+    type         = "4m"
   }
 
   tpm_state {
@@ -29,7 +36,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker_nodes" {
   }
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   network_device {
