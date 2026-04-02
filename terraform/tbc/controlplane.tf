@@ -16,11 +16,18 @@ resource "proxmox_virtual_environment_vm" "talos_controlplane_nodes" {
   on_boot     = true
   machine     = "q35"
   bios        = "ovmf"
-  boot_order = [ "scsi0" ]
+  boot_order  = ["scsi0"]
+
+  lifecycle {
+    ignore_changes = [
+      started,
+
+    ]
+  }
 
   efi_disk {
-    datastore_id      = "local-zfs"
-    type              = "4m"
+    datastore_id = "local-zfs"
+    type         = "4m"
   }
 
   tpm_state {
@@ -38,7 +45,7 @@ resource "proxmox_virtual_environment_vm" "talos_controlplane_nodes" {
   }
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   network_device {
@@ -68,8 +75,8 @@ resource "proxmox_virtual_environment_vm" "talos_controlplane_nodes" {
       }
     }
     dns {
-      domain = var.talos_cluster_config.domain
-      servers = [ "192.168.110.1" ]
+      domain  = var.talos_cluster_config.domain
+      servers = ["192.168.110.1"]
     }
   }
 }
