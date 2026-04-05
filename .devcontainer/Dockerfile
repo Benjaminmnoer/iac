@@ -9,5 +9,3 @@ RUN pacman -Syu --noconfirm \
     opentofu \
     ansible \
     opencode
-
-ENTRYPOINT ["/bin/bash", "-c", "opencode web --hostname 0.0.0.0 --port 4096 --cors 'http://localhost'"]
