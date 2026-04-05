@@ -1,105 +1,57 @@
-# Homelab Infrastructure as Code
+# Homelab IaC
 
-This repository holds the Infrastructure as Code configuration for my personal homelab. It consists mainly of Proxmox VE hypervisors, which are used to host a TrueNAS VM for storage and a Talos Linux k8s cluster for the main compute operations.
+A homelab based on **Proxmox**, **OpenTofu**, **Ansible**, **Talos Linux**, **Cilium** and **Flux**.
 
-The goal of this repository is to learn new skills and test things generally not available other places. 
 
-## Quick Start
-1. Spin up jumphost
-2. Ensure connectivity and credentials to proxmox hosts
-3. Create Azure storage for backend
-4. In each terraform subfolder
-```
-tofu init
-tofu apply
-```
-5. Run ansible playbook deploy-talos-cluster.yaml
 
-### Prerequisites
+## Overview
 
-- [OpenTofu](https://opentofu.org/)
-- [Ansible](https://docs.ansible.com/)
+**IaC** is a repository for managing my heterogenous homelab. It handles everything from provisioning and configuring virtual machine nodes to automating application deployments and managing backups.
 
-### Initial Setup
+This project started as a migration from a simple Unraid server with a few VMs and docker containers. The end goal is a more modern and mature infrastructure for various services, from common homelab services (Vaultwarden, version control server etc.) to game servers and development projects.
 
-1. Clone the repository:
-   ```bash
-   git clone ssh://git@github.com/benjaminmnoer/iac.git
-   cd iac
-   ```
+At the same time, this is also a place to try out features not commonly used in my line of work. So this is a learning/play-ground as well.
 
-2. Configure OpenTofu backend (Azure Blob Storage credentials)
 
-3. Initialize Terraform:
-   ```bash
-   cd terraform/tbc
-   tofu init
-   ```
+## Core stack
 
-4. Run Ansible playbooks for initial host configuration:
-   ```bash
-   ansible-playbook -i ansible/inventory/production.yaml ansible/deploy-talos-cluster.yaml
-   ```
+| Layer                | Tooling                                                      |
+| ---------------------| -------------------------------------------------------------|
+| Virtualization       | [Proxmox VE](https://www.proxmox.com/en/)                    |
+| Provisioning         | [Opentofu](https://opentofu.org/)                            |
+| Configuration        | [Ansible](https://www.ansible.com/)                          |
+| Kubernetes           | [Talos Linux](https://talos.dev/)                            |
+| GitOps               | [Flux](https://fluxcd.io/)                                   |
+| Secrets Management   | [SOPS](https://github.com/mozilla/sops)                      |
+| Gateway API          | [Cilium](https://cilium.io/get-started/)                     |
+| Storage Management   | [TrueNAS](https://www.truenas.com/)                          |
+| Observability        | TBD                                                          |
+
+## Goals
+
+- Moving from a single Unraid server to multiple Proxmox hosts, serving various roles
+- Automate everything from bare metal provisioning to app deployment
+- Maintain a declarative, self-healing, and idempotent system
+- Learn and implement best practices around GitOps, CI/CD, Kubernetes, and infrastructure automation
+
+## Current Status
+
+> "Under active development. Do **not** trust anything."
+
+- [ ] Proxmox environment running
+- [ ] Tofu/Ansible bootstrapping complete
+- [ ] Talos cluster deployed
+- [ ] Flux desired state deployments
+- [ ] Setup observability/monitoring
 
 ## Repository Structure
 
-| Directory | Description |
-|-----------|-------------|
-| `ansible/` | Ansible playbooks for host configuration and automation |
-| `apps/` | Kubernetes application manifests (Harbor, Vaultwarden, OneDev, Podinfo) |
-| `clusters/` | Flux CD system configuration and Kustomizations |
-| `infrastructure/` | Base infrastructure components (Cilium, CSI drivers) |
-| `terraform/` | Terraform modules for VM and cluster provisioning |
-
-## Key Technologies
-
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| Hypervisor | Proxmox VE | VM orchestration |
-| IaC | OpenTofu | Infrastructure provisioning |
-| Kubernetes | Talos Linux | Container orchestration |
-| GitOps | Flux CD | Git-based deployments |
-| Storage | TrueNAS SMB share | Storage management (ZFS) |
-| Networking (k8s) | Cilium | CNI plugin with Gateway API |
-| Secrets | SOPS | Encrypted secrets management |
-
-## Available Applications
-
-- **Harbor** - Container registry
-- **Vaultwarden** - Password manager
-- **OneDev** - CI/CD platform
-- **Podinfo** - Debug/testing utility
-
-## Common Operations
-
-### Update infrastructure components
-
-```bash
-# Terraform
-cd terraform/tbc
-terraform plan
-terraform apply
-
-# Ansible
-ansible-playbook -i ansible/inventory/production.yaml ansible/playbooks/update-system.yaml
 ```
-
-### Sync Flux Resources
-
-Flux automatically syncs changes from the `master` branch. For manual reconciliation:
-
-```bash
-flux reconcile source git flux-system
-flux reconcile kustomization production --with-source
+IaC/
+├── ansible/         # Playbooks performing various common activities, e.g. updating system, bootstrapping Talos.
+├── apps/            # Application definitions.
+├── clusters/        # Cluster resources (Flux, sops, etc.)
+├── infrastructure/  # Kubernetes cluster infrastructure code
+├── terraform/       # Infrastructure provisioning
+└── README.md
 ```
-
-### Update Secrets
-
-```bash
-export GPG_TTY=$(tty)
-sops clusters/production/secrets/<file>.yaml
-```
-
-## License
-
-MIT
