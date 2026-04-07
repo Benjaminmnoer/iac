@@ -1,0 +1,16 @@
+---
+skip-check:
+  - CKV_PROXMOX_1
+  - CKV_PROXMOX_2
+  - CKV_GIT_1
+  - CKV_GIT_2
+directory:
+  - azeroth
+  - tbc
+  - northrend
+  - test
+var-file:
+  - prod.tfvars
+  - test.tfvars
+flatten-cfg:
+  - var-files

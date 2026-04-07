@@ -71,3 +71,18 @@ IaC/
 2. **Validate**: `kubectl kustomize --dry-run=client`
 3. **Apply**: Push to git - Flux automatically reconciles cluster
 4. **Force sync**: `flux reconcile source git flux-system`
+
+
+## Testing
+You can execute these tests using the following commands:
+### Terraform/OpenTofu Tests
+Run tofu validate directly from any cluster directory after initializing with tofu init. 
+For security scanning, install tfsec (pip install tfsec) and run tfsec terraform/ with the config at terraform/.tfsec.yml. 
+For infrastructure validation, install checkov (pip install checkov) and run checkov -d terraform/ using terraform/.checkov.yml for custom settings.
+
+### Ansible Tests
+Run syntax validation with ansible-playbook --syntax-check ansible/playbooks/*.yaml. 
+Execute ansible-lint with ansible-lint ansible/playbooks/*.yaml from the playbooks directory, which automatically uses the .ansible-lint.yml configuration.
+
+### CI Workflow
+The .github/workflows/validate.yml runs all tests automatically on pull requests and pushes to master, calling each tool in sequence.

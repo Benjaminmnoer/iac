@@ -1,0 +1,13 @@
+---
+exclude_paths:
+  - '**/tests/**'
+  - '**/molecule/**'
+skip_list:
+  - yaml[line-length]
+  - name[missing]
+  - name[template]
+  - no-changed-when
+  - command-instead-of-shell
+  - internal-error
+offline: false
+profile: production
