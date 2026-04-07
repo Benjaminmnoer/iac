@@ -55,3 +55,19 @@ IaC/
 ├── terraform/       # Infrastructure provisioning
 └── README.md
 ```
+
+## Development Workflow
+### Ansible Playbooks
+1. **Edit**: Modify playbooks in `ansible/playbooks/`
+2. **Validate**: `ansible-playbook --syntax-check` + `ansible-lint`
+3. **Apply**: `ansible-playbook -i ansible/production/inventory.yaml <playbook.yaml>`
+### OpenTofu Configuration
+1. **Edit**: Modify configs in `terraform/<cluster>/`
+2. **Validate**: `tofu init && tofu validate`
+3. **Plan**: `tofu plan` (shows pending changes)
+4. **Apply**: `tofu apply`
+### Flux Configuration (GitOps)
+1. **Edit**: Modify YAML in `clusters/production/`, `apps/production/`, `infrastructure/production/`
+2. **Validate**: `kubectl kustomize --dry-run=client`
+3. **Apply**: Push to git - Flux automatically reconciles cluster
+4. **Force sync**: `flux reconcile source git flux-system`

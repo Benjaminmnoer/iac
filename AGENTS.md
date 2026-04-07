@@ -4,8 +4,21 @@
 Verification only - no apply/destroy/playbook execution. Runs in devcontainer sandbox with read-only access.
 
 ## Dev Environment
-- `.devcontainer/` - Arch Linux with pre-installed tools: opentofu, ansible, talosctl, kubectl, cilium-cli, opencode
+- `.devcontainer/` - Arch Linux with pre-installed tools: opentofu, ansible, ansible-lint, talosctl, kubectl, cilium-cli, sops, opencode
 - Execute all commands inside container
+- Install `opencode-devcontainers` plugin in `~/.config/opencode/opencode.json`:
+  ```json
+  { "plugin": ["opencode-devcontainers"] }
+  ```
+
+## Multiple Development Containers
+Use the plugin to run isolated containers per branch:
+```bash
+/devcontainer my-branch    # Start devcontainer for branch
+/devcontainer              # Show current status
+/devcontainer off          # Disable
+```
+Port range: 13000-13099 (auto-assigned per branch)
 
 ## Directory Structure
 ```
@@ -20,17 +33,23 @@ infrastructure/production/  # Infra (controllers, storage-classes, secrets)
 
 ## Validation Commands
 ```bash
-# Terraform/OpenTofu
-tofu validate <cluster_dir>
+# Terraform/OpenTofu (run from each cluster directory)
+tofu validate terraform/azeroth
+tofu validate terraform/tbc
+tofu validate terraform/northrend
+tofu validate terraform/test
 
 # Ansible
-ansible-playbook --syntax-check <playbook.yaml>
+ansible-playbook --syntax-check ansible/playbooks/*.yaml
+ansible-lint ansible/playbooks/*.yaml
 
 # Kustomize (Flux)
-kubectl kustomize <dir> --dry-run=client
+kubectl kustomize clusters/production --dry-run=client
+kubectl kustomize apps/production --dry-run=client
+kubectl kustomize infrastructure/production --dry-run=client
 
 # SOPS (verify encrypted files without decrypting)
-sops --dry-run -d <file>
+sops --dry-run -d clusters/production/secrets/*.yaml
 ```
 
 ## Best Practices to Verify

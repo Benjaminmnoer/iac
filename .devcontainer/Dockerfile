@@ -8,4 +8,7 @@ RUN pacman -Syu --noconfirm \
     cilium-cli \
     opentofu \
     ansible \
-    opencode
+    ansible-lint \
+    sops \
+    opencode \
+    && rm -rf /var/cache/pacman/pkg/*
