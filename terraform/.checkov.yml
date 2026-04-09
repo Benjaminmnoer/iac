@@ -12,5 +12,3 @@ directory:
 var-file:
   - prod.tfvars
   - test.tfvars
-flatten-cfg:
-  - var-files

@@ -11,4 +11,11 @@ RUN pacman -Syu --noconfirm \
     ansible-lint \
     sops \
     opencode \
+    python-pip \
+    trivy \
     && rm -rf /var/cache/pacman/pkg/*
+
+# Create venv for checkov
+RUN python -m venv /opt/checkov-venv \
+    && /opt/checkov-venv/bin/pip install --no-cache-dir checkov \
+    && ln -sf /opt/checkov-venv/bin/checkov /usr/local/bin/checkov
