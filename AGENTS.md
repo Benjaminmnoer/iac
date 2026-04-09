@@ -4,21 +4,8 @@
 Verification only - no apply/destroy/playbook execution. Runs in devcontainer sandbox with read-only access.
 
 ## Dev Environment
-- `.devcontainer/` - Arch Linux with pre-installed tools: opentofu, ansible, ansible-lint, talosctl, kubectl, cilium-cli, sops, opencode
+- `.devcontainer/` - Arch Linux with pre-installed tools: opentofu, ansible, ansible-lint, talosctl, sops, opencode
 - Execute all commands inside container
-- Install `opencode-devcontainers` plugin in `~/.config/opencode/opencode.json`:
-  ```json
-  { "plugin": ["opencode-devcontainers"] }
-  ```
-
-## Multiple Development Containers
-Use the plugin to run isolated containers per branch:
-```bash
-/devcontainer my-branch    # Start devcontainer for branch
-/devcontainer              # Show current status
-/devcontainer off          # Disable
-```
-Port range: 13000-13099 (auto-assigned per branch)
 
 ## Directory Structure
 ```
@@ -31,7 +18,7 @@ apps/production/         # App deployments (harbor, onedev, podinfo, vaultwarden
 infrastructure/production/  # Infra (controllers, storage-classes, secrets)
 ```
 
-## Validation Commands
+## Validation and preparation Commands
 ```bash
 # Terraform/OpenTofu (run from each cluster directory)
 tofu validate terraform/azeroth
@@ -58,9 +45,10 @@ sops --dry-run -d clusters/production/secrets/*.yaml
 - **Terraform**: Provider versions pinned, required variables defined
 - **SOPS**: Secrets encrypted, never commit plaintext credentials
 
-## Validation Order
-1. `tofu validate` → 2. `ansible --syntax-check` → 3. `kubectl kustomize --dry-run`
-
 ## Output Format
 - Summarize validation results concisely
 - Label errors clearly with file:line references
+- Update AGENTS.md along the way when new practices should be adopted or new tools will be included
+- Update README.md if one of the following criteria match:
+  - Infrastructure stack changes
+  - Application is added to Talos cluster
