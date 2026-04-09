@@ -5,6 +5,15 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"redhat.ansible",
+				"hashicorp.terraform",
+				"redhat.vscode-yaml"
+			]
+		}
+	},
 
 	// Configure tool-specific properties.
 	// "customizations": {},

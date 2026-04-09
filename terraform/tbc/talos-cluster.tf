@@ -44,7 +44,7 @@ resource "proxmox_virtual_environment_firewall_rules" "talos_api_access" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow 6443"
-    source  = "+${proxmox_virtual_environment_firewall_ipset.talos_clients_ipset.name}"
+    source  = "192.168.110.41" 
     dport   = "6443"
     proto   = "tcp"
     log     = "info"
