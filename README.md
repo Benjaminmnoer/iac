@@ -38,7 +38,7 @@ At the same time, this is also a place to try out features not commonly used in 
 
 > "Under active development. Do **not** trust anything."
 
-- [ ] Proxmox environment running
+- [x] Proxmox environment running
 - [ ] Tofu/Ansible bootstrapping complete
 - [ ] Talos cluster deployed
 - [ ] Flux desired state deployments
@@ -56,33 +56,13 @@ IaC/
 └── README.md
 ```
 
-## Development Workflow
-### Ansible Playbooks
-1. **Edit**: Modify playbooks in `ansible/playbooks/`
-2. **Validate**: `ansible-playbook --syntax-check` + `ansible-lint`
-3. **Apply**: `ansible-playbook -i ansible/production/inventory.yaml <playbook.yaml>`
-### OpenTofu Configuration
-1. **Edit**: Modify configs in `terraform/<cluster>/`
-2. **Validate**: `tofu init && tofu validate`
-3. **Plan**: `tofu plan` (shows pending changes)
-4. **Apply**: `tofu apply`
-### Flux Configuration (GitOps)
-1. **Edit**: Modify YAML in `clusters/production/`, `apps/production/`, `infrastructure/production/`
-2. **Validate**: `kubectl kustomize --dry-run=client`
-3. **Apply**: Push to git - Flux automatically reconciles cluster
-4. **Force sync**: `flux reconcile source git flux-system`
-
-
 ## Testing
 You can execute these tests using the following commands:
 ### Terraform/OpenTofu Tests
 Run tofu validate directly from any cluster directory after initializing with tofu init. 
-For security scanning, install tfsec (pip install tfsec) and run tfsec terraform/ with the config at terraform/.tfsec.yml. 
-For infrastructure validation, install checkov (pip install checkov) and run checkov -d terraform/ using terraform/.checkov.yml for custom settings.
+For security scanning, trivy is installed in dev container and can be executed on jumphost.
+For infrastructure validation, run checkov -d terraform/ using terraform/.checkov.yml for custom settings.
 
 ### Ansible Tests
 Run syntax validation with ansible-playbook --syntax-check ansible/playbooks/*.yaml. 
-Execute ansible-lint with ansible-lint ansible/playbooks/*.yaml from the playbooks directory, which automatically uses the .ansible-lint.yml configuration.
-
-### CI Workflow
-The .github/workflows/validate.yml runs all tests automatically on pull requests and pushes to master, calling each tool in sequence.
+Execute ansible-lint with ansible-lint ansible/playbooks/*.yaml from the playbooks directory.
