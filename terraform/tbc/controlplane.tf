@@ -3,7 +3,7 @@ resource "proxmox_virtual_environment_download_file" "talos_amd64_img" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = each.key
-  url          = "https://factory.talos.dev/image/${var.talos_img_schematic}/${var.talos_version}/nocloud-amd64-secureboot.iso"
+  url          = "https://factory.talos.dev/image/${var.talos_image_id}/${var.talos_version}/nocloud-amd64-secureboot.iso"
   # https://factory.talos.dev/image/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515/v1.12.6/metal-amd64.iso
 }
 
@@ -63,7 +63,7 @@ resource "proxmox_virtual_environment_vm" "talos_controlplane_nodes" {
   }
 
   operating_system {
-    type = "l26" # Linux Kernel 2.6 - 5.X.
+    type = "l26"
   }
 
   initialization {
@@ -98,4 +98,32 @@ resource "proxmox_virtual_environment_firewall_options" "controlplane_fw_options
   input_policy  = "REJECT"
   output_policy = "ACCEPT"
   radv          = true
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "talos_controlplane_access" {
+  depends_on = [proxmox_virtual_environment_firewall_ipset.talos_clients, proxmox_virtual_environment_vm.talos_controlplane_nodes ]
+  for_each   = proxmox_virtual_environment_vm.talos_controlplane_nodes
+
+  node_name = each.value.node_name
+  vm_id     = each.value.vm_id
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    comment = "Allow 50000"
+    source  = "+${proxmox_virtual_environment_firewall_ipset.talos_clients.name}"
+    dport   = "50000"
+    proto   = "tcp"
+    log     = "info"
+  }
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    comment = "Allow 6443"
+    source  = "+${proxmox_virtual_environment_firewall_ipset.talos_clients.name}"
+    dport   = "6443"
+    proto   = "tcp"
+    log     = "info"
+  }
 }

@@ -91,3 +91,21 @@ resource "proxmox_virtual_environment_firewall_options" "worker_fw_options" {
   output_policy = "ACCEPT"
   radv          = true
 }
+
+resource "proxmox_virtual_environment_firewall_rules" "talos_worker_access" {
+  depends_on = [proxmox_virtual_environment_firewall_ipset.talos_clients, proxmox_virtual_environment_vm.talos_worker_nodes ]
+  for_each   = proxmox_virtual_environment_vm.talos_worker_nodes
+
+  node_name = each.value.node_name
+  vm_id     = each.value.vm_id
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    comment = "Allow 50000"
+    source  = "+${proxmox_virtual_environment_firewall_ipset.talos_clients.name}"
+    dport   = "50000"
+    proto   = "tcp"
+    log     = "info"
+  }
+}
