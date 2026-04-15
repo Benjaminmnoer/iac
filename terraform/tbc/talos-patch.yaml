@@ -3,7 +3,7 @@ machine:
   install:
     image: factory.talos.dev/nocloud-installer-secureboot/${talos_image_id}:${talos_version}
   certSANs:
-    - kube.kirintor.benjaminmnoer.dk
+    - ${endpoint}
   systemDiskEncryption:
     ephemeral:
       provider: luks2

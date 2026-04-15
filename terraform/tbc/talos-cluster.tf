@@ -3,7 +3,7 @@ resource "talos_machine_secrets" "machine_secrets" {}
 data "talos_client_configuration" "talosconfig" {
   cluster_name         = var.talos_cluster_config.name
   client_configuration = talos_machine_secrets.machine_secrets.client_configuration
-  nodes                = [for talos_node in concat(keys(var.talos_controlplane_nodes), keys(var.talos_worker_nodes)) : "${talos_node}.benjaminmnoer.dk"]
+  nodes                = [for k, v in merge(var.talos_controlplane_nodes, var.talos_worker_nodes) : v.ip]
   endpoints            = [var.talos_cluster_config.endpoint]
 }
 
@@ -13,7 +13,7 @@ data "talos_machine_configuration" "machineconfig_controlplane" {
   machine_type     = "controlplane"
   machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
   config_patches = [
-    templatefile("${path.module}/talos-patch.yaml", { talos_version = var.talos_version, talos_image_id = var.talos_image_id })
+    templatefile("${path.module}/talos-patch.yaml", { talos_version = var.talos_version, talos_image_id = var.talos_image_id, endpoint = var.talos_cluster_config.endpoint })
   ]
 }
 
@@ -23,7 +23,7 @@ data "talos_machine_configuration" "machineconfig_worker" {
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
   config_patches = [
-    templatefile("${path.module}/talos-patch.yaml", { talos_version = var.talos_version, talos_image_id = var.talos_image_id })
+    templatefile("${path.module}/talos-patch.yaml", { talos_version = var.talos_version, talos_image_id = var.talos_image_id, endpoint = var.talos_cluster_config.endpoint })
   ]
 }
 
