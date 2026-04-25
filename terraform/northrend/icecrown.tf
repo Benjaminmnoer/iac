@@ -13,7 +13,6 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   lifecycle {
     ignore_changes = [
       started,
-
     ]
   }
 
@@ -56,17 +55,18 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   # }
 
   disk {
-    datastore_id = "fdata"
+    datastore_id = "local-zfs"
     interface    = "scsi0"
     size         = 100
     iothread     = true
   }
 
   disk {
-    datastore_id = "fdata"
+    datastore_id = "local-zfs"
     interface    = "scsi1"
     size         = 700
     iothread     = true
+    backup       = false
   }
 
   operating_system {
