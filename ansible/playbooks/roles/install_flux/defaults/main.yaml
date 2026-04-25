@@ -1,0 +1,7 @@
+---
+flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
+flux_git_owner: "benjaminmnoer"
+flux_git_branch: "master"
+flux_git_path: "clusters/production"
+flux_namespace: flux-system
+sops_key_fingerprint: "6B021152E518C20179D5558C51DE92958775C0C2"

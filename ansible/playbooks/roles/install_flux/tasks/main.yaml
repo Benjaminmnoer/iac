@@ -1,0 +1,41 @@
+---
+- name: Check if Flux is already bootstrapped
+  ansible.builtin.command: flux get all -A
+  register: flux_check
+  changed_when: false
+  failed_when: false
+
+- name: Bootstrap Flux into Kubernetes
+  ansible.builtin.command: >-
+    flux bootstrap github
+    --owner="{{ flux_git_owner }}"
+    --repository="{{ flux_git_repo | regex_replace('.*/([^/]+)\\.git', '\\1') }}"
+    --branch="{{ flux_git_branch }}"
+    --path="{{ flux_git_path }}"
+    --personal
+  register: flux_bootstrap
+  when: flux_check.rc != 0
+  environment:
+    GITHUB_TOKEN: "{{ github_pat }}"
+  tags:
+    - flux
+
+- name: Check if SOPS secret already exists
+  ansible.builtin.command: >-
+    kubectl get secret sops-gpg -n {{ flux_namespace }}
+  register: sops_secret_check
+  changed_when: false
+  failed_when: false
+
+- name: Add decryption key
+  ansible.builtin.shell: >-
+    set -o pipefail &&
+    gpg --export-secret-keys --armor "{{ sops_key_fingerprint }}" |
+    kubectl create secret generic sops-gpg
+    --namespace={{ flux_namespace }}
+    --from-file=sops.asc=/dev/stdin
+  register: decryption_key
+  when: sops_secret_check.rc != 0
+  no_log: true
+  tags:
+    - flux

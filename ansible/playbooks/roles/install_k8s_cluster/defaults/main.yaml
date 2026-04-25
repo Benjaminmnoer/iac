@@ -1,0 +1,14 @@
+---
+cilium_version: "1.19.3"
+cilium_namespace: cilium
+gateway_api_version: "v1.5.1"
+gateway_api_base_url: >-
+  https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/{{ gateway_api_version }}/config/crd
+gateway_crd_urls:
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_gatewayclasses.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_gateways.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_httproutes.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_referencegrants.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_grpcroutes.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_backendtlspolicies.yaml"
+  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_tlsroutes.yaml"
