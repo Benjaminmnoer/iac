@@ -21,17 +21,17 @@ resource "proxmox_virtual_environment_firewall_ipset" "trusted_clients" {
 }
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "management" {
-  depends_on = [ proxmox_virtual_environment_firewall_ipset.trusted_clients ]
+  depends_on = [proxmox_virtual_environment_firewall_ipset.trusted_clients]
 
-  name       = "management"
-  comment    = "Managed by Terraform"
+  name    = "management"
+  comment = "Managed by Terraform"
 
   rule {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow 8006"
     source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
-    dest    = "${var.host_ip}"
+    dest    = var.host_ip
     dport   = "8006"
     proto   = "tcp"
     log     = "nolog"
@@ -42,14 +42,14 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "manageme
     action  = "ACCEPT"
     comment = "Allow SSH"
     source  = "+${proxmox_virtual_environment_firewall_ipset.trusted_clients.name}"
-    dest    = "${var.host_ip}"
+    dest    = var.host_ip
     macro   = "SSH"
     log     = "info"
   }
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "proxmox" {
-  depends_on = [ proxmox_virtual_environment_cluster_firewall_security_group.management ]
+  depends_on = [proxmox_virtual_environment_cluster_firewall_security_group.management]
 
   rule {
     security_group = proxmox_virtual_environment_cluster_firewall_security_group.management.name
@@ -58,7 +58,7 @@ resource "proxmox_virtual_environment_firewall_rules" "proxmox" {
 }
 
 resource "proxmox_virtual_environment_cluster_firewall" "cluster_fw_options" {
-  depends_on = [ proxmox_virtual_environment_firewall_rules.proxmox ]
+  depends_on = [proxmox_virtual_environment_firewall_rules.proxmox]
 
   enabled = true
 

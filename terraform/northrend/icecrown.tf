@@ -13,7 +13,7 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   lifecycle {
     ignore_changes = [
       started,
-      
+
     ]
   }
 
@@ -99,7 +99,7 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   #   id     = "0000:06:00.0"
   #   rombar = true
   # }
-  
+
   # Wifi
   # hostpci {
   #   device = "hostpci4"

@@ -1,0 +1,66 @@
+---
+- name: Configure Arch Jump Host
+  hosts: jump
+  become: true
+
+  tasks:
+    - name: Update system
+      community.general.pacman:
+        update_cache: true
+        upgrade: true
+      tags:
+        - system
+
+    - name: Install base packages
+      community.general.pacman:
+        name:
+          - git
+          - curl
+          - vim
+          - openssh
+          - iproute2
+          - net-tools
+          - bind-tools
+          - terraform
+          - opentofu
+          - ansible
+          - python
+        state: present
+      tags:
+        - packages
+
+    - name: Configure SSH
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regex }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regex: '^#PermitRootLogin', line: 'PermitRootLogin no' }
+        - { regex: '^PasswordAuthentication', line: 'PasswordAuthentication no' }
+        - { regex: '^PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+        - { regex: '^PermitEmptyPasswords', line: 'PermitEmptyPasswords no' }
+        - { regex: '^ChallengeResponseAuthentication', line: 'ChallengeResponseAuthentication no' }
+        - { regex: '^UsePAM', line: 'UsePAM yes' }
+      notify: Restart SSH
+      tags:
+        - ssh
+
+    - name: Ensure SSH service is enabled
+      ansible.builtin.service:
+        name: sshd
+        enabled: true
+        state: started
+      tags:
+        - ssh
+
+    - name: Set timezone
+      community.general.timezone:
+        name: Europe/Copenhagen
+      tags:
+        - system
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

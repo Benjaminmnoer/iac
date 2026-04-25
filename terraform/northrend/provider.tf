@@ -14,15 +14,15 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint  = var.virtual_environment_endpoint
+  endpoint = var.virtual_environment_endpoint
   # api_token = var.virtual_environment_api_token
-  username  = var.virtual_environment_username
-  password  = var.virtual_environment_password
+  username = var.virtual_environment_username
+  password = var.virtual_environment_password
 
   min_tls = 1.2
 
   # uncomment (unless on Windows...)
-  tmp_dir = "/var/tmp"
+  tmp_dir  = "/var/tmp"
   insecure = true
 
   ssh {
@@ -30,7 +30,7 @@ provider "proxmox" {
     username    = "root"
     private_key = file("~/.ssh/id_ed25519")
     node {
-      name = "northrend"
+      name    = "northrend"
       address = "192.168.100.4"
     }
   }

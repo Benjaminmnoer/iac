@@ -16,7 +16,7 @@ resource "proxmox_virtual_environment_vm" "pvet01" {
   bios       = "ovmf"
   boot_order = ["scsi0", "ide2"]
   machine    = "q35"
-  on_boot = false
+  on_boot    = false
 
   efi_disk {
     datastore_id      = "local-zfs"
@@ -73,7 +73,7 @@ resource "proxmox_virtual_environment_vm" "pvet03" {
   bios       = "ovmf"
   boot_order = ["scsi0", "ide2"]
   machine    = "q35"
-  on_boot = false
+  on_boot    = false
 
   efi_disk {
     datastore_id      = "local-zfs"
@@ -106,7 +106,7 @@ resource "proxmox_virtual_environment_vm" "pvet03" {
   }
 
   network_device {
-    bridge = "vmbr0"
+    bridge  = "vmbr0"
     vlan_id = 90
   }
 
@@ -130,7 +130,7 @@ resource "proxmox_virtual_environment_vm" "pvet02" {
   bios       = "ovmf"
   boot_order = ["scsi0", "ide2"]
   machine    = "q35"
-  on_boot = false
+  on_boot    = false
 
   efi_disk {
     datastore_id      = "local-zfs"
@@ -163,7 +163,7 @@ resource "proxmox_virtual_environment_vm" "pvet02" {
   }
 
   network_device {
-    bridge = "vmbr0"
+    bridge  = "vmbr0"
     vlan_id = 90
   }
 
