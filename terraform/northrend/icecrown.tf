@@ -30,7 +30,7 @@ resource "proxmox_virtual_environment_vm" "icecrown" {
   kvm_arguments = "-cpu 'host,host-cache-info=on,topoext=on,hv_ipi,hv_relaxed,hv_reset,hv_runtime,hv_spinlocks=0x1fff,hv_stimer,hv_synic,hv_time,hv_vapic,hv_vendor_id=0123756792CD,hv_vpindex,kvm=off,+kvm_pv_eoi,+kvm_pv_unhalt,+invtsc,hypervisor=off' -smp '16,sockets=1,cores=16,maxcpus=16'"
 
   efi_disk {
-    datastore_id      = "fdata"
+    datastore_id      = "local-zfs"
     type              = "4m"
     pre_enrolled_keys = true
   }
