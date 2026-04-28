@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.90.0"
+      version = "0.104.0"
     }
   }
   backend "azurerm" {
@@ -31,7 +31,7 @@ provider "proxmox" {
     private_key = file("~/.ssh/id_ed25519")
     node {
       name = "azeroth"
-      address = "192.168.100.4"
+      address = "azeroth.benjaminmnoer.dk"
     }
   }
 }
