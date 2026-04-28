@@ -1,9 +1,8 @@
 module "proxmox" {
-  source           = "../modules/proxmox"
+  source           = "git::https://github.com/Benjaminmnoer/proxmox-terraform-module.git?ref=0.1-rc"
   cloudflare_token = var.cf_token
-  cluster_nodes    = var.cluster_nodes
-  trusted_clients  = var.trusted_clients
-  firewall_enabled = false
+  management_ipset = var.management_ipset
+  firewall_enabled = true
 }
 
 # resource "proxmox_virtual_environment_acme_dns_plugin" "cloudflare" {
