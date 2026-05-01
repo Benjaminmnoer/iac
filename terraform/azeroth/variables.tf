@@ -24,7 +24,7 @@ variable "cf_token" {
 variable "cluster_nodes" {
   description = "List of cluster nodes"
   type = map(object({
-    ip      = string
+    ip = string
   }))
 }
 

@@ -5,8 +5,23 @@ module "proxmox" {
   firewall_enabled = true
 }
 
+moved {
+  from = proxmox_virtual_environment_acme_dns_plugin.cloudflare
+  to   = module.proxmox.proxmox_virtual_environment_acme_dns_plugin.cloudflare
+}
+
+moved {
+  from = proxmox_virtual_environment_cluster_firewall.cluster_fw_options
+  to = module.proxmox.proxmox_virtual_environment_cluster_firewall.cluster_fw_options
+}
+
+moved {
+  from = proxmox_virtual_environment_firewall_ipset.trusted_clients
+  to = module.proxmox.proxmox_virtual_environment_firewall_ipset.management
+}
+
 # resource "proxmox_virtual_environment_acme_dns_plugin" "cloudflare" {
-  
+
 #   plugin = "cloudflare"
 #   api    = "cf"
 #   data = {

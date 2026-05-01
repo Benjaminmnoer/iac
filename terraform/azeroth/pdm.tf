@@ -1,8 +1,14 @@
-resource "proxmox_virtual_environment_download_file" "pdm-iso" {
+resource "proxmox_download_file" "pdm-iso" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = "azeroth"
   url          = "https://enterprise.proxmox.com/iso/proxmox-datacenter-manager_0.9-BETA-1.iso"
+  overwrite    = false
+}
+
+moved {
+  from = proxmox_virtual_environment_download_file.pdm-iso
+  to = proxmox_download_file.pdm-iso
 }
 
 resource "proxmox_virtual_environment_vm" "cosmos" {
@@ -81,7 +87,7 @@ resource "proxmox_virtual_environment_firewall_rules" "cosmos" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${module.proxmox.ipset_trusted_clients_name}"
+    source  = "+management"
     dest    = var.cosmos_ip
     dport   = "8443"
     proto   = "tcp"

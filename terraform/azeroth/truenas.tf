@@ -1,8 +1,13 @@
-resource "proxmox_virtual_environment_download_file" "truenas-iso" {
+resource "proxmox_download_file" "truenas-iso" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = "azeroth"
   url          = "https://download.sys.truenas.net/TrueNAS-SCALE-Fangtooth/25.04.2.4/TrueNAS-SCALE-25.04.2.4.iso"
+}
+
+moved {
+  from = proxmox_virtual_environment_download_file.truenas-iso
+  to = proxmox_download_file.truenas-iso
 }
 
 resource "proxmox_virtual_environment_vm" "stormwind" {
@@ -117,7 +122,7 @@ resource "proxmox_virtual_environment_firewall_rules" "stormwind" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${module.proxmox.ipset_trusted_clients_name}"
+    source  = "+management"
     dest    = var.stormwind_ip
     macro   = "HTTPS"
     log     = "nolog"

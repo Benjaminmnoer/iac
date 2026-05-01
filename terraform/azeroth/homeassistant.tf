@@ -44,7 +44,7 @@ resource "proxmox_virtual_environment_vm" "haos" {
   }
 
   network_device {
-    bridge = "vmbr0"
+    bridge   = "vmbr0"
     firewall = true
   }
 

@@ -1,8 +1,13 @@
-resource "proxmox_virtual_environment_download_file" "pbs-iso" {
+resource "proxmox_download_file" "pbs-iso" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = "azeroth"
   url          = "https://enterprise.proxmox.com/iso/proxmox-backup-server_4.0-1.iso"
+}
+
+moved {
+  from = proxmox_virtual_environment_download_file.pbs-iso
+  to = proxmox_download_file.pbs-iso
 }
 
 resource "proxmox_virtual_environment_vm" "lorekeeper" {
@@ -13,7 +18,7 @@ resource "proxmox_virtual_environment_vm" "lorekeeper" {
   on_boot     = true
 
   startup {
-    order    = 2
+    order = 2
   }
 
   bios       = "ovmf"
@@ -81,10 +86,10 @@ resource "proxmox_virtual_environment_firewall_rules" "lorekeeper" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${module.proxmox.ipset_trusted_clients_name}"
+    source  = "+management"
     dest    = var.lorekeeper_ip
     dport   = "8007"
-    proto = "tcp"
+    proto   = "tcp"
     log     = "nolog"
   }
 }
