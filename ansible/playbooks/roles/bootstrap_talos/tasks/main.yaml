@@ -1,0 +1,47 @@
+---
+- name: Bootstrap first controlplane node
+  ansible.builtin.command:
+    cmd: talosctl bootstrap --nodes {{ hostvars[groups['talos_controlplane'][0]]['ansible_host'] }} --endpoints {{ bootstrap_talos_endpoint }}
+  delegate_to: localhost
+  run_once: true
+  register: bootstrap_talos_result
+  changed_when: bootstrap_talos_result.rc == 0
+
+- name: Wait for etcd to be ready
+  ansible.builtin.command:
+    cmd: talosctl --nodes {{ hostvars[groups['talos_controlplane'][0]]['ansible_host'] }} --endpoints {{ bootstrap_talos_endpoint }} service etcd
+  delegate_to: localhost
+  register: bootstrap_talos_etcd_status
+  until: bootstrap_talos_etcd_status.rc == 0 and "'running' in bootstrap_talos_etcd_status.stdout"
+  retries: 30
+  delay: 10
+  changed_when: false
+
+- name: Generate talosconfig
+  ansible.builtin.command:
+    cmd: talosctl config generate {{ bootstrap_talos_endpoint }} {{ bootstrap_talos_talosconfig_file }} --endpoints {{ bootstrap_talos_endpoint }}
+  delegate_to: localhost
+  register: bootstrap_talos_gen_config
+  changed_when: bootstrap_talos_gen_config.rc == 0
+
+- name: Merge generated talosconfig with secrets
+  ansible.builtin.shell: |
+    talosctl config merge {{ bootstrap_talos_config_dir }}/talosconfig
+  delegate_to: localhost
+  changed_when: true
+
+- name: Generate kubeconfig
+  ansible.builtin.command:
+    cmd: >-
+      talosctl kubeconfig
+      --nodes {{ hostvars[groups['talos_controlplane'][0]]['ansible_host'] }}
+      --endpoints {{ bootstrap_talos_endpoint }}
+      {{ bootstrap_talos_kubeconfig_file }}
+  delegate_to: localhost
+  register: bootstrap_talos_gen_kubeconfig
+  changed_when: bootstrap_talos_gen_kubeconfig.rc == 0
+
+- name: Display kubeconfig location
+  ansible.builtin.debug:
+    msg: "Kubeconfig saved to {{ bootstrap_talos_kubeconfig_file }}. Use: kubectl --kubeconfig {{ bootstrap_talos_kubeconfig_file }} get nodes"
+  delegate_to: localhost

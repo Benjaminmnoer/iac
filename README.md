@@ -1,6 +1,6 @@
 # Homelab IaC
 
-A homelab based on **Proxmox**, **OpenTofu**, **Ansible**, **Talos Linux**, **Cilium** and **Flux**.
+A homelab based on **Bare Metal**, **OpenTofu**, **Ansible**, **Talos Linux**, **Cilium** and **Flux**.
 
 
 
@@ -17,10 +17,9 @@ At the same time, this is also a place to try out features not commonly used in 
 
 | Layer                | Tooling                                                      |
 | ---------------------| -------------------------------------------------------------|
-| Virtualization       | [Proxmox VE](https://www.proxmox.com/en/)                    |
 | Provisioning         | [Opentofu](https://opentofu.org/)                            |
 | Configuration        | [Ansible](https://www.ansible.com/)                          |
-| Kubernetes           | [Talos Linux](https://talos.dev/)                            |
+| Kubernetes           | [Talos Linux](https://talos.dev/) (Bare Metal)               |
 | GitOps               | [Flux](https://fluxcd.io/)                                   |
 | Secrets Management   | [SOPS](https://github.com/mozilla/sops)                      |
 | Gateway API          | [Cilium](https://cilium.io/get-started/)                     |
@@ -39,8 +38,10 @@ At the same time, this is also a place to try out features not commonly used in 
 > "Under active development. Do **not** trust anything."
 
 - [x] Proxmox environment running
-- [ ] Tofu/Ansible bootstrapping complete
-- [ ] Talos cluster deployed
+- [x] Ansible bootstrapping for bare metal Talos complete
+- [x] Bootstrap playbook restructured (tools → configs → apply → bootstrap)
+- [x] CNI/Flux deployment separated into dedicated playbook
+- [ ] Talos cluster deployed (bare metal)
 - [ ] Flux desired state deployments
 - [ ] Setup observability/monitoring
 
@@ -49,10 +50,15 @@ At the same time, this is also a place to try out features not commonly used in 
 ```
 IaC/
 ├── ansible/         # Playbooks performing various common activities, e.g. updating system, bootstrapping Talos.
+│   ├── playbooks/   # Ansible playbooks and roles
+│   │   ├── bootstrap-talos-baremetal.yaml  # Bootstrap Talos cluster (tools, configs, apply, bootstrap)
+│   │   ├── deploy-talos-services.yaml      # Deploy CNI, Gateway API, and Flux to cluster
+│   │   └── roles/                          # Ansible roles
+│   └── production/  # Inventory files
 ├── apps/            # Application definitions.
 ├── clusters/        # Cluster resources (Flux, sops, etc.)
 ├── infrastructure/  # Kubernetes cluster infrastructure code
-├── terraform/       # Infrastructure provisioning
+├── terraform/       # Infrastructure provisioning (Proxmox VMs, TrueNAS, etc.)
 └── README.md
 ```
 

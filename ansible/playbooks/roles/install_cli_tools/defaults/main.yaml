@@ -1,5 +1,5 @@
 ---
-hubble_version: "1.18.6"
-cilium_cli_version: "0.19.2"
-tools_install_path: /usr/local/bin
-tmp_download_path: /tmp
+install_cli_tools_hubble_version: "1.18.6"
+install_cli_tools_cilium_cli_version: "0.19.2"
+install_cli_tools_tools_install_path: /usr/local/bin
+install_cli_tools_tmp_download_path: /tmp

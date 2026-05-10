@@ -14,7 +14,7 @@
 
 - name: Check if cilium-cli is already installed
   ansible.builtin.command: which cilium-cli
-  register: cilium_cli_check
+  register: install_cli_tools_cilium_cli_check
   changed_when: false
   failed_when: false
   tags:
@@ -23,20 +23,20 @@
 - name: Install cilium-cli
   become: true
   ansible.builtin.unarchive:
-src: >-
-        https://github.com/cilium/cilium-cli/releases/download/v{{ cilium_cli_version }}/cilium-linux-amd64.tar.gz
-    dest: "{{ tools_install_path }}"
+    src: >-
+      https://github.com/cilium/cilium-cli/releases/download/v{{ install_cli_tools_cilium_cli_version }}/cilium-linux-amd64.tar.gz
+    dest: "{{ install_cli_tools_tools_install_path }}"
     remote_src: true
     mode: "0755"
     owner: root
     group: root
-  when: cilium_cli_check.rc != 0
+  when: install_cli_tools_cilium_cli_check.rc != 0
   tags:
     - tools
 
 - name: Check if hubble is already installed
   ansible.builtin.command: which hubble
-  register: hubble_check
+  register: install_cli_tools_hubble_check
   changed_when: false
   failed_when: false
   tags:
@@ -45,26 +45,26 @@ src: >-
 - name: Download Hubble
   ansible.builtin.get_url:
     url: >-
-      https://github.com/cilium/hubble/releases/download/v{{ hubble_version }}/hubble-linux-amd64.tar.gz
-    dest: "{{ tmp_download_path }}/hubble-linux-amd64.tar.gz"
+      https://github.com/cilium/hubble/releases/download/v{{ install_cli_tools_hubble_version }}/hubble-linux-amd64.tar.gz
+    dest: "{{ install_cli_tools_tmp_download_path }}/hubble-linux-amd64.tar.gz"
     mode: "u=rwx,g=rx,o=r"
     owner: root
     group: root
     checksum: >-
       sha256:{{ lookup('url',
-      'https://github.com/cilium/hubble/releases/download/v' + hubble_version +
+      'https://github.com/cilium/hubble/releases/download/v' + install_cli_tools_hubble_version +
       '/hubble-linux-amd64.tar.gz.sha256sum').split()[0] }}
-  when: hubble_check.rc != 0
+  when: install_cli_tools_hubble_check.rc != 0
   tags:
     - tools
 
 - name: Install Hubble
   become: true
   ansible.builtin.unarchive:
-    src: "{{ tmp_download_path }}/hubble-linux-amd64.tar.gz"
-    dest: "{{ tools_install_path }}"
+    src: "{{ install_cli_tools_tmp_download_path }}/hubble-linux-amd64.tar.gz"
+    dest: "{{ install_cli_tools_tools_install_path }}"
     remote_src: true
     mode: "0755"
-  when: hubble_check.rc != 0
+  when: install_cli_tools_hubble_check.rc != 0
   tags:
     - tools

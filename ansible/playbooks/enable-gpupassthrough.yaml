@@ -28,7 +28,7 @@
         mode: u=rw,g=r,o=r
       register: iommu
 
-    - name: kvm ignore msrs
+    - name: Kvm ignore msrs
       ansible.builtin.copy:
         dest: /etc/modprobe.d/kvm.conf
         content: options kvm ignore_msrs=1
@@ -57,3 +57,4 @@
       ansible.builtin.command: update-initramfs -u
       when: (vfio is changed) or (iommu is changed) or (kvm is changed) or (gpu is changed)
       notify: Reboot
+      changed_when: true

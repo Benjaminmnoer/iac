@@ -1,14 +1,14 @@
 ---
-cilium_version: "1.19.3"
-cilium_namespace: cilium
-gateway_api_version: "v1.5.1"
-gateway_api_base_url: >-
-  https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/{{ gateway_api_version }}/config/crd
-gateway_crd_urls:
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_gatewayclasses.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_gateways.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_httproutes.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_referencegrants.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_grpcroutes.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_backendtlspolicies.yaml"
-  - "{{ gateway_api_base_url }}/standard/gateway.networking.k8s.io_tlsroutes.yaml"
+install_k8s_cluster_cilium_version: "1.19.3"
+install_k8s_cluster_cilium_namespace: cilium
+install_k8s_cluster_gateway_api_version: "v1.5.1"
+install_k8s_cluster_gateway_api_base_url: >-
+  https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/{{ install_k8s_cluster_gateway_api_version }}/config/crd
+install_k8s_cluster_gateway_crd_urls:
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_gatewayclasses.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_gateways.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_httproutes.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_referencegrants.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_grpcroutes.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_backendtlspolicies.yaml"
+  - "{{ install_k8s_cluster_gateway_api_base_url }}/standard/gateway.networking.k8s.io_tlsroutes.yaml"

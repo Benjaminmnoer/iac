@@ -1,0 +1,61 @@
+---
+- name: Prepare Local Machine with CLI Tools
+  hosts: ansible_controller
+  gather_facts: true
+  tasks:
+    - name: Include install_cli_tools role
+      ansible.builtin.include_role:
+        name: install_cli_tools
+      tags: [tools]
+
+- name: Generate Talos Machine Configurations
+  hosts: ansible_controller
+  gather_facts: true
+  vars:
+    work_dir: "/tmp/talos-baremetal-configs"
+  tasks:
+    - name: Include generate_talos_configs role
+      ansible.builtin.include_role:
+        name: generate_talos_configs
+      tags: [configs]
+
+- name: Apply Talos Configurations to Bare Metal Nodes
+  hosts: talos_controlplane:talos_workers
+  gather_facts: false
+  vars:
+    work_dir: "/tmp/talos-baremetal-configs"
+  tasks:
+    - name: Include apply_talos_configs role
+      ansible.builtin.include_role:
+        name: apply_talos_configs
+      tags: [apply]
+
+- name: Bootstrap Talos Cluster
+  hosts: ansible_controller
+  gather_facts: true
+  vars:
+    work_dir: "/tmp/talos-baremetal-configs"
+  tasks:
+    - name: Include bootstrap_talos role
+      ansible.builtin.include_role:
+        name: bootstrap_talos
+      tags: [bootstrap]
+
+- name: Verify Cluster Status
+  hosts: ansible_controller
+  gather_facts: false
+  vars:
+    work_dir: "/tmp/talos-baremetal-configs"
+    kubeconfig_path: "{{ work_dir }}/kubeconfig"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  tasks:
+    - name: Check cluster nodes
+      ansible.builtin.command:
+        cmd: kubectl get nodes
+      register: nodes_status
+      changed_when: false
+
+    - name: Display node status
+      ansible.builtin.debug:
+        msg: "{{ nodes_status.stdout_lines }}"

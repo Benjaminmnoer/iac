@@ -1,0 +1,35 @@
+---
+- name: Wait for Talos nodes to be ready (USB booted)
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: 50000
+    timeout: "{{ apply_talos_configs_timeout }}"
+  delegate_to: localhost
+  when: inventory_hostname in (groups['talos_controlplane'] | default([]) + groups['talos_workers'] | default([]))
+
+- name: Apply controlplane configuration
+  ansible.builtin.command:
+    cmd: talosctl apply-config --insecure --nodes {{ ansible_host }} --file {{ apply_talos_configs_patched_cp_config }}
+  delegate_to: localhost
+  register: apply_talos_configs_cp
+  changed_when: apply_talos_configs_cp.rc == 0
+  when: inventory_hostname in groups['talos_controlplane']
+
+- name: Apply worker configuration
+  ansible.builtin.command:
+    cmd: talosctl apply-config --insecure --nodes {{ ansible_host }} --file {{ apply_talos_configs_patched_worker_config }}
+  delegate_to: localhost
+  register: apply_talos_configs_worker
+  changed_when: apply_talos_configs_worker.rc == 0
+  when: inventory_hostname in groups['talos_workers']
+
+- name: Verify configuration applied
+  ansible.builtin.command:
+    cmd: talosctl --nodes {{ ansible_host }} version
+  delegate_to: localhost
+  register: apply_talos_configs_version_check
+  changed_when: false
+
+- name: Display Talos node version
+  ansible.builtin.debug:
+    msg: "Node {{ inventory_hostname }} ({{ ansible_host }}): {{ talos_version_check.stdout }}"

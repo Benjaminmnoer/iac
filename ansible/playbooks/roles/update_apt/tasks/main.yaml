@@ -8,4 +8,4 @@
     update_cache: true
     upgrade: "{{ upgrade_type }}"
   when: upgrade_strategy == "apt"
-  register: update_result
+  register: update_apt_update_result

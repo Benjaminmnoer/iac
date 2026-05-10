@@ -1,0 +1,7 @@
+generate_talos_configs_patch_file: "{{ role_path }}/files/talos-patch-baremetal.yaml"
+generate_talos_configs_secrets_file: "{{ work_dir }}/secrets.yaml"
+generate_talos_configs_config_dir: "{{ work_dir }}"
+generate_talos_configs_patched_cp_config: "{{ work_dir }}/controlplane-patched.yaml"
+generate_talos_configs_patched_worker_config: "{{ work_dir }}/worker-patched.yaml"
+generate_talos_configs_base_cp_config: "{{ work_dir }}/controlplane.yaml"
+generate_talos_configs_base_worker_config: "{{ work_dir }}/worker.yaml"

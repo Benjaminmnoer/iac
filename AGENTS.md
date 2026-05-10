@@ -10,8 +10,8 @@ Verification only - no apply/destroy/playbook execution. Runs in devcontainer sa
 ## Directory Structure
 ```
 ansible/playbooks/         # Ansible playbooks
-ansible/playbooks/roles/  # Ansible roles
-ansible/production/       # Inventory
+ansible/playbooks/roles/  # Ansible roles (install_cli_tools, install_k8s_cluster, install_flux, generate_talos_configs, apply_talos_configs, bootstrap_talos)
+ansible/production/       # Inventory (inventory.yaml)
 terraform/<cluster>/     # OpenTofu configs (azeroth, tbc, northrend, test)
 clusters/production/     # Flux GitOps (kubeconfig, talosconfig, gotk-*)
 apps/production/         # App deployments (harbor, onedev, podinfo, vaultwarden)
@@ -28,7 +28,11 @@ tofu validate terraform/test
 
 # Ansible
 ansible-playbook --syntax-check ansible/playbooks/*.yaml
-ansible-lint ansible/playbooks/*.yaml
+ansible-lint ansible/playbooks
+
+# Ansible (bare metal Talos bootstrap)
+ansible-playbook --syntax-check ansible/playbooks/bootstrap-talos-baremetal.yaml
+ansible-lint ansible/playbooks/bootstrap-talos-baremetal.yaml
 
 # Kustomize (Flux)
 kubectl kustomize clusters/production --dry-run=client
@@ -39,9 +43,16 @@ kubectl kustomize infrastructure/production --dry-run=client
 sops --dry-run -d clusters/production/secrets/*.yaml
 ```
 
+## Ansible Lint Configuration
+- Profile: production (strictest)
+- Key rules enforced: var-naming (with role prefix), no-changed-when, yaml (line-length)
+- All variables in roles must use role name as prefix (e.g., install_flux_git_repo)
+- The `.ansible-lint.yml` config file is located in `ansible/playbooks/.ansible-lint.yml`
+
 ## Best Practices to Verify
 - **Ansible FQCN**: Module names must be fully qualified (e.g., `ansible.builtin.file`, not `file`)
 - **Ansible truthy values**: Use `yes`/`no` or explicit integers, never `true`/`false`
+- **Ansible variable naming**: All registered variables in roles must use the role name as prefix (e.g., `install_k8s_cluster_cilium_status`)
 - **Terraform**: Provider versions pinned, required variables defined
 - **SOPS**: Secrets encrypted, never commit plaintext credentials
 

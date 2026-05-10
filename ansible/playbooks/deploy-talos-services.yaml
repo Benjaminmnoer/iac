@@ -1,0 +1,48 @@
+---
+- name: Deploy CNI, Gateway API, and Flux to Talos Cluster
+  hosts: ansible_controller
+  gather_facts: true
+  vars_prompt:
+    - name: github_pat
+      prompt: "Github PAT"
+      private: true
+  vars:
+    cluster_name: "Kirin Tor"
+    flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
+    flux_git_owner: "benjaminmnoer"
+    flux_git_branch: "master"
+    flux_git_path: "clusters/production"
+    work_dir: "/tmp/talos-baremetal-configs"
+    kubeconfig_path: "{{ work_dir }}/kubeconfig"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  tasks:
+    - name: Install Cilium and Gateway API
+      ansible.builtin.include_role:
+        name: install_k8s_cluster
+      tags: [cluster]
+
+    - name: Install Flux CD
+      ansible.builtin.include_role:
+        name: install_flux
+      tags: [flux]
+
+    - name: Verify Cilium status
+      ansible.builtin.command:
+        cmd: kubectl get pods -n kube-system -l k8s-app=cilium
+      register: cilium_status
+      changed_when: false
+
+    - name: Display Cilium status
+      ansible.builtin.debug:
+        msg: "{{ cilium_status.stdout_lines }}"
+
+    - name: Verify Flux status
+      ansible.builtin.command:
+        cmd: flux get all -A
+      register: flux_status
+      changed_when: false
+
+    - name: Display Flux status
+      ansible.builtin.debug:
+        msg: "{{ flux_status.stdout_lines }}"

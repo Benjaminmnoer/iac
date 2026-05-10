@@ -1,0 +1,23 @@
+version: v1alpha1
+machine:
+  install:
+    image: factory.talos.dev/metal-installer-secureboot/${talos_image_id}:${talos_version}
+  certSANs:
+    - ${endpoint}
+  systemDiskEncryption:
+    ephemeral:
+      provider: luks2
+      keys:
+        - slot: 0
+          tpm: {}
+    state:
+      provider: luks2
+      keys:
+        - slot: 0
+          tpm: {}
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true

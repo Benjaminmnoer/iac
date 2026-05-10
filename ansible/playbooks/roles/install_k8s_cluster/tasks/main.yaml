@@ -1,7 +1,7 @@
 ---
 - name: Check if Gateway CRDs are already installed
   ansible.builtin.command: kubectl get gatewayclass gateway
-  register: gateway_crd_check
+  register: install_k8s_cluster_gateway_crd_check
   changed_when: false
   failed_when: false
   tags:
@@ -10,8 +10,8 @@
 - name: Install Gateway API CRDs
   ansible.builtin.command:
     cmd: kubectl apply -f "{{ item }}"
-  loop: "{{ gateway_crd_urls }}"
-  when: gateway_crd_check.rc != 0
+  loop: "{{ install_k8s_cluster_gateway_crd_urls }}"
+  when: install_k8s_cluster_gateway_crd_check.rc != 0
   changed_when: false
   tags:
     - cluster
@@ -19,8 +19,8 @@
 - name: Check if Cilium is already installed
   kubernetes.core.helm_info:
     name: cilium
-    release_namespace: "{{ cilium_namespace }}"
-  register: cilium_installed
+    release_namespace: "{{ install_k8s_cluster_cilium_namespace }}"
+  register: install_k8s_cluster_cilium_installed
   failed_when: false
   changed_when: false
   tags:
@@ -30,10 +30,10 @@
   kubernetes.core.helm:
     name: cilium
     chart_ref: oci://quay.io/cilium/charts/cilium
-    release_namespace: "{{ cilium_namespace }}"
+    release_namespace: "{{ install_k8s_cluster_cilium_namespace }}"
     create_namespace: true
     update_repo_cache: true
-    chart_version: "{{ cilium_version }}"
+    chart_version: "{{ install_k8s_cluster_cilium_version }}"
     set_values:
       - value: ipam.mode=kubernetes
       - value: kubeProxyReplacement=true
@@ -49,51 +49,51 @@
       - value: k8sClientRateLimit.qps=10
       - value: k8sClientRateLimit.burst=20
       - value: securityContext.privileged=true
-  when: cilium_installed.status is not defined or cilium_installed.status.status != "deployed"
+  when: install_k8s_cluster_cilium_installed.status is not defined or install_k8s_cluster_cilium_installed.status.status != "deployed"
   tags:
     - cluster
 
 - name: Verify Cilium is running
   ansible.builtin.command: cilium-cli status --wait
-  register: cilium_status
+  register: install_k8s_cluster_cilium_status
   changed_when: false
-  failed_when: cilium_status.rc != 0
+  failed_when: install_k8s_cluster_cilium_status.rc != 0
   retries: 10
   delay: 30
-  until: cilium_status.rc == 0
+  until: install_k8s_cluster_cilium_status.rc == 0
   tags:
     - verify
 
 - name: DNS resolution test
   ansible.builtin.command: >-
     kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
-  register: dns_test
+  register: install_k8s_cluster_dns_test
   changed_when: false
-  failed_when: dns_test.rc != 0
+  failed_when: install_k8s_cluster_dns_test.rc != 0
   ignore_errors: true
   tags:
     - verify
 
 - name: Get cluster info
   ansible.builtin.command: kubectl cluster-info
-  register: cluster_info
+  register: install_k8s_cluster_cluster_info
   changed_when: false
-  failed_when: cluster_info.rc != 0
+  failed_when: install_k8s_cluster_cluster_info.rc != 0
   tags:
     - verify
 
 - name: Get cluster nodes
   ansible.builtin.command: kubectl get nodes -o wide
-  register: cluster_nodes
+  register: install_k8s_cluster_cluster_nodes
   changed_when: false
-  failed_when: cluster_nodes.rc != 0
+  failed_when: install_k8s_cluster_cluster_nodes.rc != 0
   tags:
     - verify
 
 - name: Get all namespaces
   ansible.builtin.command: kubectl get namespaces
-  register: namespaces
+  register: install_k8s_cluster_namespaces
   changed_when: false
-  failed_when: namespaces.rc != 0
+  failed_when: install_k8s_cluster_namespaces.rc != 0
   tags:
     - verify
