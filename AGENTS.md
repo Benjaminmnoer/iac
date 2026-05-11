@@ -1,65 +1,72 @@
 # Homelab IaC
 
 ## Scope
-Verification only - no apply/destroy/playbook execution. Runs in devcontainer sandbox with read-only access.
+Verification only - no apply/destroy/playbook execution. Runs in devcontainer sandbox with read-only access that has no connectivity to actual infrastructure (Proxmox, Talos nodes, Kubernetes clusters). All validation commands work locally. Dev container is Arch-based with opentofu, ansible, ansible-lint, talosctl, sops, trivy, checkov pre-installed.
 
-## Dev Environment
-- `.devcontainer/` - Arch Linux with pre-installed tools: opentofu, ansible, ansible-lint, talosctl, sops, opencode
-- Execute all commands inside container
+## Key directories
 
-## Directory Structure
-```
-ansible/playbooks/         # Ansible playbooks
-ansible/playbooks/roles/  # Ansible roles (install_cli_tools, install_k8s_cluster, install_flux, generate_talos_configs, apply_talos_configs, bootstrap_talos)
-ansible/production/       # Inventory (inventory.yaml)
-terraform/<cluster>/     # OpenTofu configs (azeroth, tbc, northrend, test)
-clusters/production/     # Flux GitOps (kubeconfig, talosconfig, gotk-*)
-apps/production/         # App deployments (harbor, onedev, podinfo, vaultwarden)
-infrastructure/production/  # Infra (controllers, storage-classes, secrets)
-```
+| Path | Purpose |
+|------|---------|
+| `terraform/<cluster>/` | OpenTofu configs per cluster (azeroth, northrend, test) |
+| `terraform/modules/vm\|container/` | Shared Proxmox modules |
+| `ansible/inventory/` | Ansible inventory (everything under this is gitignored) |
+| `ansible/playbooks/` | Playbooks + roles |
+| `ansible/playbooks/roles/` | Roles: install_cli_tools, install_k8s_cluster, install_flux, generate_talos_configs, apply_talos_configs, bootstrap_talos, update_apt, update_pacman |
+| `clusters/production/` | Flux GitOps root (kubeconfig + talosconfig gitignored) |
+| `apps/production/` | App kustomizations (harbor, onedev, podinfo, vaultwarden) |
+| `infrastructure/production/` | K8s infra (controllers, storage-classes, secrets) |
 
-## Validation and preparation Commands
+## Validation commands
+
 ```bash
-# Terraform/OpenTofu (run from each cluster directory)
+# OpenTofu - init first, then validate per cluster dir
 tofu validate terraform/azeroth
-tofu validate terraform/tbc
 tofu validate terraform/northrend
 tofu validate terraform/test
 
-# Ansible
+# OpenTofu - module tests (mocked)
+tofu test terraform/modules/vm
+tofu test terraform/modules/container
+
+# Ansible - syntax check all playbooks
 ansible-playbook --syntax-check ansible/playbooks/*.yaml
+
+# Ansible-lint (config: ansible/playbooks/.ansible-lint.yml)
+# ansible.cfg also has skip_list entries
 ansible-lint ansible/playbooks
 
-# Ansible (bare metal Talos bootstrap)
-ansible-playbook --syntax-check ansible/playbooks/bootstrap-talos-baremetal.yaml
-ansible-lint ansible/playbooks/bootstrap-talos-baremetal.yaml
-
-# Kustomize (Flux)
+# Kustomize (Flux) - dry-run validation
 kubectl kustomize clusters/production --dry-run=client
 kubectl kustomize apps/production --dry-run=client
 kubectl kustomize infrastructure/production --dry-run=client
 
-# SOPS (verify encrypted files without decrypting)
+# SOPS - verify encrypted files without decrypting
 sops --dry-run -d clusters/production/secrets/*.yaml
+
+# Checkov - infra security scanning
+checkov -d terraform/ --config-file terraform/.checkov.yml
 ```
 
-## Ansible Lint Configuration
-- Profile: production (strictest)
-- Key rules enforced: var-naming (with role prefix), no-changed-when, yaml (line-length)
-- All variables in roles must use role name as prefix (e.g., install_flux_git_repo)
-- The `.ansible-lint.yml` config file is located in `ansible/playbooks/.ansible-lint.yml`
+## Ansible conventions
 
-## Best Practices to Verify
-- **Ansible FQCN**: Module names must be fully qualified (e.g., `ansible.builtin.file`, not `file`)
-- **Ansible truthy values**: Use `yes`/`no` or explicit integers, never `true`/`false`
-- **Ansible variable naming**: All registered variables in roles must use the role name as prefix (e.g., `install_k8s_cluster_cilium_status`)
+- **FQCN required**: All module names must be fully qualified (e.g., `ansible.builtin.file`, not `file`)
+- **Variable prefix**: All role variables and registered vars must use the role name as prefix (e.g., `install_flux_git_repo`, `install_k8s_cluster_cilium_status`)
+- **Role variables in `defaults/`**: Use `defaults/main.yaml` for role variables (as done by `install_flux`, `install_k8s_cluster`, `install_cli_tools`)
+- **Ansible-lint profile**: `production` (strictest). Skipped rules: `yaml[line-length]`, `name[missing]`, `name[template]`, `no-changed-when`, `command-instead-of-shell`, `internal-error` (via `.ansible-lint.yml`) — plus `var-naming[no-role-prefix]` and `no-changed-when` (via `ansible.cfg`)
+
+## Bootstrap flow
+
+The bare metal Talos bootstrap playbook (`bootstrap-talos-baremetal.yaml`) runs as 5 sequential plays tagged `tools → configs → apply → bootstrap → verify`, all targeting the `ansible_controller` host (except `apply` which targets `talos_controlplane:talos_workers`). The `deploy-talos-services.yaml` playbook runs after to install Cilium + Flux.
+
+## Notes
+
+- `test` file at repo root is empty (not a dir)
+- Terraform modules have `tests.tftest.hcl` files using mocked `proxmox` provider — run via `tofu test`
+- No pre-commit hooks, no CI workflows, no npm/yarn/pip package managers at root
+- Inventory files (`ansible/inventory/*`) gitignored — no inventory committed to repo
+
+## Conventions to maintain
+
+- **Ansible**: FQCN modules, role-prefixed vars, `defaults/main.yaml` for variables
 - **Terraform**: Provider versions pinned, required variables defined
 - **SOPS**: Secrets encrypted, never commit plaintext credentials
-
-## Output Format
-- Summarize validation results concisely
-- Label errors clearly with file:line references
-- Update AGENTS.md along the way when new practices should be adopted or new tools will be included
-- Update README.md if one of the following criteria match:
-  - Infrastructure stack changes
-  - Application is added to Talos cluster
