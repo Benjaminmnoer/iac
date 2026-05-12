@@ -81,7 +81,7 @@ resource "proxmox_virtual_environment_firewall_rules" "lorekeeper" {
     type    = "in"
     action  = "ACCEPT"
     comment = "Allow HTTPS"
-    source  = "+${module.proxmox.ipset_trusted_clients_name}"
+    source  = "+management"
     dest    = var.lorekeeper_ip
     dport   = "8007"
     proto = "tcp"

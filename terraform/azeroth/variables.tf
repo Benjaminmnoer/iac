@@ -28,11 +28,11 @@ variable "cluster_nodes" {
   }))
 }
 
-variable "trusted_clients" {
+variable "management_ipset" {
   description = "List of allowed client IP for management access"
   type = map(object({
     ip      = string
-    comment = string
+    comment = optional(string, "")
   }))
 }
 
