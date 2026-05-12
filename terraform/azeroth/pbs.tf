@@ -3,6 +3,7 @@ resource "proxmox_download_file" "pbs-iso" {
   datastore_id = "local"
   node_name    = "azeroth"
   url          = "https://enterprise.proxmox.com/iso/proxmox-backup-server_4.0-1.iso"
+  overwrite = false
 }
 
 resource "proxmox_virtual_environment_vm" "lorekeeper" {

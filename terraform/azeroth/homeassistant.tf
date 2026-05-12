@@ -2,6 +2,7 @@ resource "proxmox_virtual_environment_file" "haos_disk_file" {
   content_type = "import"
   datastore_id = "local"
   node_name    = "azeroth"
+  overwrite = false
 
   source_file {
     path = "./haos_ova-17.0.qcow2"
