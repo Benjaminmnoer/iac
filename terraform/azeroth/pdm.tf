@@ -3,6 +3,7 @@ resource "proxmox_download_file" "pdm-iso" {
   datastore_id = "local"
   node_name    = "azeroth"
   url          = "https://enterprise.proxmox.com/iso/proxmox-datacenter-manager_0.9-BETA-1.iso"
+  overwrite     = false
 }
 
 resource "proxmox_virtual_environment_vm" "cosmos" {

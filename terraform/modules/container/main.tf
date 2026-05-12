@@ -9,6 +9,11 @@ resource "proxmox_download_file" "this" {
   checksum_algorithm = var.download_file_checksum_algorithm
 }
 
+resource "random_password" "this" {
+  length           = 16
+  special          = true
+}
+
 resource "proxmox_virtual_environment_container" "this" {
   description = var.description
   node_name   = var.node_name
@@ -24,6 +29,7 @@ resource "proxmox_virtual_environment_container" "this" {
 
     user_account {
       keys = var.user_ssh_keys
+      password = random_password.this.result
     }
   }
 
@@ -51,6 +57,9 @@ resource "proxmox_virtual_environment_container" "this" {
     type             = var.os_type
   }
 
+  features {
+    nesting = var.nesting_enabled
+  }
   unprivileged = var.unprivileged
 }
 

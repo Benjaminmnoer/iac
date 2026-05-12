@@ -111,11 +111,17 @@ variable "on_boot" {
   default     = true
 }
 
+variable "nesting_enabled" {
+  description = "Enable nesting feature"
+  type        = bool
+  default     = false
+}
+
 variable "firewall" {
   description = "Firewall configuration"
   type = object({
-    enabled      = optional(bool, true)
-    input_policy = optional(string, "REJECT")
+    enabled       = optional(bool, true)
+    input_policy  = optional(string, "REJECT")
     output_policy = optional(string, "ACCEPT")
     rules = optional(list(object({
       type    = optional(string, "in")

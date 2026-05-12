@@ -10,6 +10,11 @@ output "node_name" {
   value = var.node_name
 }
 
+output "password" {
+  value = random_password.this.result
+  sensitive = true
+}
+
 output "download_file_id" {
   description = "File ID of the downloaded template"
   value       = length(proxmox_download_file.this) > 0 ? proxmox_download_file.this[0].id : ""
