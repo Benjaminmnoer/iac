@@ -1,5 +1,5 @@
 ---
-- name: Start Proxmox VMs
+- name: Get Proxmox VM Status
   hosts: proxmox
   tasks:
     - name: Check VM statuses before starting

@@ -19,21 +19,21 @@
           vfio_pci
           vfio_virqfd
         mode: u=rw,g=r,o=r
-      register: vfio
+      register: gpupassthrough_vfio
 
     - name: IOMMU enable unsafe interrupts
       ansible.builtin.copy:
         dest: /etc/modprobe.d/iommu_unsafe_interrupts.conf
         content: options vfio_iommu_type1 allow_unsafe_interrupts=1
         mode: u=rw,g=r,o=r
-      register: iommu
+      register: gpupassthrough_iommu
 
     - name: Kvm ignore msrs
       ansible.builtin.copy:
         dest: /etc/modprobe.d/kvm.conf
         content: options kvm ignore_msrs=1
         mode: u=rw,g=r,o=r
-      register: kvm
+      register: gpupassthrough_kvm
 
     - name: Blacklist GPU drivers
       ansible.builtin.copy:
@@ -43,7 +43,7 @@
           blacklist nvidiafb
           blacklist rivafb
         mode: u=rw,g=r,o=r
-      register: blacklist
+      register: gpupassthrough_blacklist
 
     - name: Add GPU to vfio
       ansible.builtin.copy:
@@ -51,10 +51,18 @@
         content: options vfio-pci ids={{ vendorids }} disable_vga=1
         mode: u=rw,g=r,o=r
       when: vendorids is defined
-      register: gpu
+      register: gpupassthrough_gpu
 
     - name: Update initramfs
       ansible.builtin.command: update-initramfs -u
-      when: (vfio is changed) or (iommu is changed) or (kvm is changed) or (gpu is changed)
+      when: (gpupassthrough_vfio is changed) or (gpupassthrough_iommu is changed) or (gpupassthrough_kvm is changed) or (gpupassthrough_gpu is changed)
       notify: Reboot
       changed_when: true
+
+  handlers:
+    - name: Update GRUB
+      ansible.builtin.command: update-grub
+      changed_when: false
+
+    - name: Reboot
+      ansible.builtin.reboot:

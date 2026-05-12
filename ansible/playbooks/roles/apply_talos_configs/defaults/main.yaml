@@ -1,4 +1,4 @@
 apply_talos_configs_patched_cp_config: "{{ work_dir }}/controlplane-patched.yaml"
 apply_talos_configs_patched_worker_config: "{{ work_dir }}/worker-patched.yaml"
-apply_talos_configs_endpoint: "{{ talos_endpoint | default('192.168.110.1') }}"
+apply_talos_configs_endpoint: "{{ talos_endpoint }}"
 apply_talos_configs_timeout: 600

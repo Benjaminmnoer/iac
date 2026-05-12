@@ -4,6 +4,8 @@
   register: install_flux_check
   changed_when: false
   failed_when: false
+  tags:
+    - flux
 
 - name: Bootstrap Flux into Kubernetes
   ansible.builtin.command: >-
@@ -27,6 +29,8 @@
   register: install_flux_sops_secret_check
   changed_when: false
   failed_when: false
+  tags:
+    - flux
 
 - name: Add decryption key
   ansible.builtin.shell: >-

@@ -1,9 +1,9 @@
 version: v1alpha1
 machine:
   install:
-    image: factory.talos.dev/metal-installer-secureboot/${talos_image_id}:${talos_version}
+    image: factory.talos.dev/metal-installer-secureboot/{{ talos_image_id }}:{{ talos_version }}
   certSANs:
-    - ${endpoint}
+    - {{ talos_endpoint }}
   systemDiskEncryption:
     ephemeral:
       provider: luks2

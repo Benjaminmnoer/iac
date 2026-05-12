@@ -1,17 +1,11 @@
 ---
 - name: Setup Talos Kubernetes Cluster with Cilium and Flux CD
-  hosts: localhost
+  hosts: ansible_controller
   gather_facts: true
   vars_prompt:
     - name: github_pat
       prompt: "Github PAT"
       private: true
-  vars:
-    cluster_name: "Kirin Tor"
-    flux_git_repo: "https://github.com/benjaminmnoer/iac.git"
-    flux_git_owner: "benjaminmnoer"
-    flux_git_branch: "master"
-    flux_git_path: "clusters/production"
   tasks:
     - name: Install host CLI tools
       ansible.builtin.include_role:

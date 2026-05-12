@@ -7,5 +7,5 @@
   community.general.pacman:
     update_cache: true
     upgrade: true
-  when: upgrade_strategy == "pacman"
+  when: update_pacman_upgrade_strategy == "pacman"
   register: update_pacman_update_result

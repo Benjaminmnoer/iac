@@ -5,29 +5,11 @@
     state: directory
     mode: '0700'
 
-- name: Copy bare metal patch file to work directory
-  ansible.builtin.copy:
-    src: "{{ generate_talos_configs_patch_file }}"
+- name: Render bare metal patch file from template
+  ansible.builtin.template:
+    src: talos-patch-baremetal.yaml.j2
     dest: "{{ work_dir }}/talos-patch-baremetal.yaml"
     mode: '0644'
-
-- name: Replace variables in patch file
-  ansible.builtin.replace:
-    path: "{{ work_dir }}/talos-patch-baremetal.yaml"
-    regexp: '${talos_image_id}'
-    replace: "{{ talos_image_id }}"
-
-- name: Replace talos version in patch file
-  ansible.builtin.replace:
-    path: "{{ work_dir }}/talos-patch-baremetal.yaml"
-    regexp: '${talos_version}'
-    replace: "{{ talos_version }}"
-
-- name: Replace endpoint in patch file
-  ansible.builtin.replace:
-    path: "{{ work_dir }}/talos-patch-baremetal.yaml"
-    regexp: '${endpoint}'
-    replace: "{{ talos_endpoint }}"
 
 - name: Generate Talos machine secrets
   ansible.builtin.command:
@@ -35,7 +17,6 @@
       talosctl gen secrets
       --output {{ generate_talos_configs_secrets_file }}
     creates: "{{ generate_talos_configs_secrets_file }}"
-  register: generate_talos_configs_gen_secrets
 
 - name: Generate base Talos configuration
   ansible.builtin.command:
@@ -45,7 +26,6 @@
       --output {{ generate_talos_configs_config_dir }}
       --with-secrets {{ generate_talos_configs_secrets_file }}
     creates: "{{ generate_talos_configs_base_cp_config }}"
-  register: generate_talos_configs_gen_config
 
 - name: Apply patch to controlplane configuration
   ansible.builtin.command:
@@ -54,7 +34,6 @@
       --patch-file {{ work_dir }}/talos-patch-baremetal.yaml
       --output {{ generate_talos_configs_patched_cp_config }}
     creates: "{{ generate_talos_configs_patched_cp_config }}"
-  register: generate_talos_configs_patch_cp
 
 - name: Apply patch to worker configuration
   ansible.builtin.command:
@@ -63,7 +42,6 @@
       --patch-file {{ work_dir }}/talos-patch-baremetal.yaml
       --output {{ generate_talos_configs_patched_worker_config }}
     creates: "{{ generate_talos_configs_patched_worker_config }}"
-  register: generate_talos_configs_patch_worker
 
 - name: Display generated configs location
   ansible.builtin.debug:

@@ -1,5 +1,5 @@
 bootstrap_talos_config_dir: "{{ work_dir }}"
-bootstrap_talos_endpoint: "{{ talos_endpoint | default('192.168.110.1') }}"
+bootstrap_talos_endpoint: "{{ talos_endpoint }}"
 bootstrap_talos_kubeconfig_file: "{{ work_dir }}/kubeconfig"
 bootstrap_talos_talosconfig_file: "{{ work_dir }}/talosconfig"
 bootstrap_talos_timeout: 600

@@ -25,7 +25,7 @@
       register: start_result
       become: true
       when: item.stdout is not search("running")
-      with_items: "{{ vm_status.results }}"
+      loop: "{{ vm_status.results }}"
       changed_when: start_result.rc == 0
 
     - name: Show VM start results

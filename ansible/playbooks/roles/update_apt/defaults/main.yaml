@@ -1,0 +1,3 @@
+---
+update_apt_upgrade_type: dist
+update_apt_upgrade_strategy: apt

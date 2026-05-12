@@ -19,6 +19,15 @@
         name: generate_talos_configs
       tags: [configs]
 
+- name: Review Generated Configuration
+  hosts: ansible_controller
+  gather_facts: false
+  tags: [review]
+  tasks:
+    - name: Pause for manual review of generated configs
+      ansible.builtin.pause:
+        prompt: "Review generated configs in {{ work_dir }}, then press Enter to continue (Ctrl+C to abort)"
+
 - name: Apply Talos Configurations to Bare Metal Nodes
   hosts: talos_controlplane:talos_workers
   gather_facts: false

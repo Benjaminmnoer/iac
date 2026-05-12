@@ -69,7 +69,6 @@
     kubectl run -it --rm --restart=Never --image=busybox dns-test -- nslookup google.com
   register: install_k8s_cluster_dns_test
   changed_when: false
-  failed_when: install_k8s_cluster_dns_test.rc != 0
   ignore_errors: true
   tags:
     - verify

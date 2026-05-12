@@ -32,4 +32,4 @@
 
 - name: Display Talos node version
   ansible.builtin.debug:
-    msg: "Node {{ inventory_hostname }} ({{ ansible_host }}): {{ talos_version_check.stdout }}"
+    msg: "Node {{ inventory_hostname }} ({{ ansible_host }}): {{ apply_talos_configs_version_check.stdout }}"

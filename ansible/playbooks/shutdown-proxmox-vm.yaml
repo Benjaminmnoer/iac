@@ -25,7 +25,7 @@
       register: shutdown_results
       become: true
       when: item.stdout is not search("stopped")
-      with_items: "{{ vm_status.results }}"
+      loop: "{{ vm_status.results }}"
       changed_when: shutdown_results.rc == 0
 
     - name: Show VM shutdown results
