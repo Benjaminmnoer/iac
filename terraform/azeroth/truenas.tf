@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_download_file" "truenas-iso" {
+resource "proxmox_download_file" "truenas-iso" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = "azeroth"
