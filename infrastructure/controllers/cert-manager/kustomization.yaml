@@ -5,3 +5,4 @@ resources:
   - release.yaml
   - repository.yaml
   - clusterissuer.yaml
+  - dns-token.yaml
