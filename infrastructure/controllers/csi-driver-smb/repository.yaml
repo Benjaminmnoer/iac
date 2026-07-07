@@ -4,5 +4,5 @@ metadata:
   name: csi-driver-smb
   namespace: smb-system
 spec:
-  interval: 1m
+  interval: 24h
   url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
