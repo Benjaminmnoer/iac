@@ -15,7 +15,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production/secrets/
+  path: ./infrastructure/secrets/
   prune: true
   wait: true
 ---
@@ -31,7 +31,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production/controllers/
+  path: ./infrastructure/controllers/
   prune: true
   wait: true
 ---
@@ -49,6 +49,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production/storage-classes/
+  path: ./infrastructure/storage-classes/
   prune: true
   wait: true

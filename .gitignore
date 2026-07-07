@@ -49,3 +49,4 @@ ansible/inventory/*
 
 # Proxmox disks
 *.qcow2
+talos/
