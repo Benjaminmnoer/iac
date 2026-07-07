@@ -4,6 +4,6 @@ resources:
   - repository.yaml
   - release.yaml
   - ip-pool.yaml
-  # - announcement-policy.yaml
-  # - gateway.yaml
-  # - redirect-httproute.yaml
+  - announcement-policy.yaml
+  - gateway.yaml
+  - redirect-httproute.yaml
