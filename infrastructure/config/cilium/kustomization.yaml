@@ -5,3 +5,4 @@ resources:
   - announcement-policy.yaml
   - gateway.yaml
   - redirect-httproute.yaml
+  - wildcard-cert.yaml
