@@ -1,0 +1,28 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard.kirintor.benjaminmnoer.dk-tls
+  namespace: kube-system
+spec:
+  # Secret names are always required.
+  secretName: wildcard.kirintor.benjaminmnoer.dk-tls
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  duration: 1080h
+  renewBefore: 72h
+  isCA: false
+  usages:
+    - server auth
+  subject:
+    organizations:
+      - cert-manager
+  commonName: "*.kirintor.benjaminmnoer.dk"
+  dnsNames:
+    - "kirintor.benjaminmnoer.dk"
+  emailAddresses:
+    - benjaminmnoer25@gmail.com
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuers
