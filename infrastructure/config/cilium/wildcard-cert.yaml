@@ -25,4 +25,4 @@ spec:
     - benjaminmnoer25@gmail.com
   issuerRef:
     name: letsencrypt
-    kind: ClusterIssuers
+    kind: ClusterIssuer
