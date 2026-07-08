@@ -22,8 +22,6 @@ spec:
   dnsNames:
     - "*.kirintor.benjaminmnoer.dk"
     - "kirintor.benjaminmnoer.dk"
-  emailAddresses:
-    - benjaminmnoer25@gmail.com
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer
