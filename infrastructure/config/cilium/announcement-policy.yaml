@@ -7,3 +7,5 @@ spec:
     matchLabels:
       gateway.networking.k8s.io/gateway-name: kirintor-gateway
   loadBalancerIPs: true
+  interfaces:
+  - .*\.160
