@@ -17,8 +17,8 @@ spec:
     remediation:
       retries: 3
   values:
-    k8sServiceHost: kube.kirintor.benjaminmnoer.dk
-    k8sServicePort: 6443
+    k8sServiceHost: localhost
+    k8sServicePort: 7445
     operator:
       replicas: 1
     kubeProxyReplacement: true
