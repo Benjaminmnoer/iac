@@ -9,7 +9,7 @@ spec:
     secretRef:
       name: sops-gpg
   dependsOn:
-    - name: infrastructure-storage-classes
+    - name: infrastructure-config
   interval: 10m0s
   sourceRef:
     kind: GitRepository
