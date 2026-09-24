@@ -12,7 +12,7 @@ spec:
   storageClassName: local-storage
   volumeMode: Filesystem
   local:
-    path: /var/mnt/cnpg
+    path: /var/mnt/local-volume/cnpg
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -35,7 +35,7 @@ spec:
   storageClassName: local-storage
   volumeMode: Filesystem
   local:
-    path: /var/mnt/cnpg
+    path: /var/mnt/local-volume/cnpg
   nodeAffinity:
     required:
       nodeSelectorTerms:
