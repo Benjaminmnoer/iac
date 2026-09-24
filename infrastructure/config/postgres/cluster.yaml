@@ -1,0 +1,30 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: shared-pg-cluster
+  namespace: postgres
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.3
+  postgresql:
+    synchronous:
+      method: any
+      number: 1
+      dataDurability: required
+  resources:
+    requests:
+      memory: "1024Mi"
+      cpu: 1
+    limits:
+      memory: "2048Mi"
+      cpu: 2
+  storage:
+    size: 100Gi
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Gi
+      storageClassName: local-storage
+      volumeMode: Filesystem
