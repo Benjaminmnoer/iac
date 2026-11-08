@@ -18,10 +18,10 @@ spec:
     # Left unset, the cluster inherits PostgreSQL's defaults: 128MB
     # shared_buffers and max_connections=100. These are sized for the 2Gi
     # container limit (CNPG's rule of thumb is ~25% for shared_buffers).
-    parameters:
-      shared_buffers: 512MB
-      effective_cache_size: 1536MB
-      max_connections: "200"
+    # parameters:
+    #   shared_buffers: 512MB
+    #   effective_cache_size: 1536MB
+    #   max_connections: "200"
     synchronous:
       method: any
       number: 1
