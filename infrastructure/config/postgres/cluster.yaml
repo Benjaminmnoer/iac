@@ -5,8 +5,26 @@ metadata:
   namespace: postgres
 spec:
   instances: 2
-  imageName: ghcr.io/cloudnative-pg/postgresql:16.3
+  # Image is resolved from the ClusterImageCatalog so minor upgrades are a
+  # one-line change there instead of a stale pinned tag here.
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: postgresql
+    major: 16
+  # Switch the primary over before replacing it, instead of restarting it in
+  # place (default "unsupervised" causes a short write outage).
+  primaryUpdateStrategy: switchover
   postgresql:
+    # Left unset, the cluster inherits PostgreSQL's defaults: 128MB
+    # shared_buffers and max_connections=100. These are sized for the 2Gi
+    # container limit (CNPG's rule of thumb is ~25% for shared_buffers).
+    parameters:
+      shared_buffers: 512MB
+      effective_cache_size: 1536MB
+      # Harbor alone defaults to maxOpenConns=900 / maxIdleConns=100, so its
+      # chart values must be lowered to fit under this cap.
+      max_connections: "200"
     synchronous:
       method: any
       number: 1
@@ -20,11 +38,4 @@ spec:
       cpu: 2
   storage:
     size: 100Gi
-    pvcTemplate:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 100Gi
-      storageClassName: local-storage
-      volumeMode: Filesystem
+    storageClass: local-storage

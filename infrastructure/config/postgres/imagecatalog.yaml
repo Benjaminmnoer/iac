@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: postgresql
+spec:
+  images:
+    # Keep the major version in sync with imageCatalogRef.major in cluster.yaml.
+    # Bump the minor tag to roll a minor upgrade (no dump/restore required).
+    - major: 16
+      image: ghcr.io/cloudnative-pg/postgresql:16.15
