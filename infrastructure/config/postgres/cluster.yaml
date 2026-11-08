@@ -12,9 +12,8 @@ spec:
     kind: ClusterImageCatalog
     name: postgresql
     major: 16
-  # Switch the primary over before replacing it, instead of restarting it in
-  # place (default "unsupervised" causes a short write outage).
-  primaryUpdateStrategy: switchover
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
   postgresql:
     # Left unset, the cluster inherits PostgreSQL's defaults: 128MB
     # shared_buffers and max_connections=100. These are sized for the 2Gi
@@ -22,8 +21,6 @@ spec:
     parameters:
       shared_buffers: 512MB
       effective_cache_size: 1536MB
-      # Harbor alone defaults to maxOpenConns=900 / maxIdleConns=100, so its
-      # chart values must be lowered to fit under this cap.
       max_connections: "200"
     synchronous:
       method: any
@@ -39,3 +36,23 @@ spec:
   storage:
     size: 100Gi
     storageClass: local-storage
+  managed:
+    roles:
+      - name: harbor_user
+        ensure: present
+        login: true
+        connectionLimit: 80
+        passwordSecret:
+          name: harbor-postgres-credentials
+      - name: onedev_user
+        ensure: present
+        login: true
+        connectionLimit: 30
+        passwordSecret:
+          name: onedev-postgres-credentials
+      - name: vaultwarden_user
+        ensure: present
+        login: true
+        connectionLimit: 15
+        passwordSecret:
+          name: vaultwarden-postgres-credentials

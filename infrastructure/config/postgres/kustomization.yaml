@@ -4,3 +4,5 @@ resources:
   - persistentvolume.yaml
   - imagecatalog.yaml
   - cluster.yaml
+  - databases.yaml
+  - credentials.yaml

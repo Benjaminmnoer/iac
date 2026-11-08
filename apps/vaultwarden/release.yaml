@@ -24,9 +24,18 @@ spec:
     service:
       type: ClusterIP
     database:
-      type: postgres
+      # "postgresql" makes the chart emit PGHOST/PGPORT/PGDATABASE/PGUSER and a
+      # DATABASE_URL derived from them, instead of one opaque connection string,
+      # so the target stays reviewable here.
+      type: postgresql
+      host: shared-pg-cluster-rw.postgres.svc.cluster.local
+      port: "5432"
+      dbName: vaultwarden
+      username: vaultwarden_user
       existingSecret: vaultwarden-postgres-creds
-      existingSecretKey: connectionstring
+      # Defaults to "username"; empty means PGUSER comes from `username` above
+      # and the Secret only carries the password.
+      existingSecretUserKey: ""
     adminToken:
       existingSecret: vaultwarden-admin-creds
       existingSecretKey: adminToken

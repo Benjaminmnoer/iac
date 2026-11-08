@@ -4,6 +4,7 @@ namespace: onedev
 resources:
   - namespace.yaml
   - pv.yaml
+  - db-credentials.yaml
   - repository.yaml
   - release.yaml
   - httproute.yaml

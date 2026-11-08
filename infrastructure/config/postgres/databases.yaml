@@ -1,0 +1,43 @@
+# One database per application on the shared CNPG cluster.
+#
+# The owner roles are declared in cluster.yaml (spec.managed.roles); the operator
+# creates/retries the Database until the role exists, so ordering is not critical.
+# `databaseReclaimPolicy: retain` keeps the data if a Database object is pruned.
+#
+# `spec.name` is immutable - to rename a database, create a new object instead.
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: harbor
+  namespace: postgres
+spec:
+  name: harbor
+  owner: harbor_user
+  databaseReclaimPolicy: retain
+  cluster:
+    name: shared-pg-cluster
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: onedev
+  namespace: postgres
+spec:
+  name: onedev
+  owner: onedev_user
+  databaseReclaimPolicy: retain
+  cluster:
+    name: shared-pg-cluster
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: vaultwarden
+  namespace: postgres
+spec:
+  name: vaultwarden
+  owner: vaultwarden_user
+  databaseReclaimPolicy: retain
+  cluster:
+    name: shared-pg-cluster

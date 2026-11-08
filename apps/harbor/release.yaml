@@ -23,11 +23,19 @@ spec:
     database:
       type: external
       external:
-        host: 192.168.2.5
+        # CNPG primary service of the shared cluster (postgres namespace).
+        host: shared-pg-cluster-rw.postgres.svc.cluster.local
         port: "5432"
         username: harbor_user
         coreDatabase: harbor
         existingSecret: harbor-postgres-secret
+        # In-cluster traffic only; CNPG's default pg_hba accepts scram-sha-256
+        # without TLS.
+        sslmode: disable
+      # Defaults are 900/100 *per pod* (core, jobservice, registry, exporter),
+      # which cannot fit inside the cluster's max_connections=200.
+      maxOpenConns: 20
+      maxIdleConns: 10
     expose:
       type: ClusterIP
       tls:

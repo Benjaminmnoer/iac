@@ -24,9 +24,16 @@ spec:
         database:
             external: true
             type: postgresql
-            host: 192.168.2.5
+            # CNPG primary service of the shared cluster (postgres namespace).
+            host: shared-pg-cluster-rw.postgres.svc.cluster.local
             port: "5432"
             name: onedev
             user: onedev_user
-            password: dummy-value
             maximumPoolSize: "25"
+    # The chart has no existingSecret support: it renders `database.password`
+    # into its own `onedev-secrets` Secret, so the password is supplied as a
+    # values fragment from a Secret that Helm does not own.
+    valuesFrom:
+        - kind: Secret
+          name: onedev-db-credentials
+          valuesKey: values.yaml
