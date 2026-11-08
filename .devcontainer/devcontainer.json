@@ -5,6 +5,7 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"runArgs": ["--name", "iac-dev-container"],
 	"customizations": {
 		"vscode": {
 			"extensions": [

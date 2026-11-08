@@ -50,3 +50,6 @@ ansible/inventory/*
 # Proxmox disks
 *.qcow2
 talos/
+
+# OpenCode agents
+.opencode/agents
